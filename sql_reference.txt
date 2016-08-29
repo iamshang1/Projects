@@ -1,0 +1,76 @@
+DDL:
+    CREATE TABLE tablename (column1 data_type, column2 data_type);
+    ALTER TABLE tablename ADD columnname data_type;
+    ALTER TABLE tablename ADD (column1 data_type, column2 data_type);
+    ALTER TABLE tablename MODIFY column new_data_type; (*varies between Databases)
+    ALTER TABLE tablename RENAME COLUMN oldname TO newname;
+    ALTER TABLE tablename DROP COLUMN columnname;
+    DROP TABLE tablename;
+    RENAME TABLE oldname TO newname;
+    CREATE INDEX index ON table (column);
+    DROP INDEX index ON table;
+
+DML:
+    SELECT column1 AS alias, column2 FROM table WHERE column = condition;
+    INSERT INTO table (column1, column2) VALUES (value1, value2);
+    UPDATE table SET column = value WHERE column = condition;
+    DELETE FROM table WHERE column = value;
+
+Wildcards:
+    % - replaces zero or more characters
+    _ - replaces one character
+    [characters] - match one of the listed characters
+    [^characters] or [!characters] - match a character not listed
+
+SELECT statements:
+    SELECT COUNT(column) FROM table;
+    SELECT DISTINCT column FROM table;
+    SELECT COUNT(DISTINCT column) FROM table;
+    SELECT SUM(column) FROM table;
+    SELECT MAX(column) FROM table;
+    SELECT MIN(column) FROM table;
+    SELECT AVG(column) FROM table;
+    SELECT ROUND(column, 2) FROM table;
+    SELECT DATE(timestamp) FROM table;
+    SELECT ISNULL(column, substitute) FROM table;
+    SELECT CAST(column AS data_type) FROM table;
+    SELECT column FROM table WHERE column IS NULL;
+    SELECT column FROM table WHERE column IS NOT NULL;
+    SELECT column FROM table WHERE column > value;
+    SELECT column FROM table WHERE column LIKE pattern;
+    SELECT column FROM table WHERE column BETWEEN value AND value;
+    SELECT column FROM table WHERE condition1 AND condition2;
+    SELECT column FROM table WHERE condition1 OR condition2;
+    SELECT column FROM table LIMIT limit;    
+
+ORDER BY, GROUP BY statements:
+    SELECT column1, column2 FROM table ORDER BY column1, column2;
+    SELECT column1, COUNT(column2) FROM table GROUP BY column1 ORDER BY column2;
+    SELECT column1, COUNT(column2) FROM table GROUP BY column1 ORDER BY column2 DESC;
+    SELECT column1, column2, COUNT(column3) FROM table GROUP BY column1, column2 ORDER BY column1, column2;
+    SELECT column1, column2, SUM(column3) FROM table GROUP BY column1, column2 WITH ROLLUP;
+
+JOIN and UNION statements:
+    SELECT * FROM table1 JOIN table2 USING (key);
+    SELECT * FROM table1 JOIN table2 ON table1.key = table2.key;
+    SELECT * FROM table1 LEFT JOIN table2 ON table1.key = table2.key;
+    SELECT * FROM table1 JOIN table2 ON table1.key1 = table2.key1 OR table1.key2 = table2.key2;
+    SELECT * FROM alias1.column, alias2.column FROM table AS alias1 JOIN table AS alias2 USING (key);
+    SELECT * FROM alias1.column, alias2.column FROM table AS alias1, table AS alias2 on alias1.key = alias2.key;
+    SELECT same_column FROM table1 UNION SELECT same_column FROM table2;
+    SELECT same_column FROM table1 UNION ALL SELECT same_column FROM table2;
+
+Subqueries and Other Useful Statements:
+    SELECT ROUND(column1*1.0/(SELECT column FROM table2),2) AS alias FROM table1;
+    SELECT * FROM table WHERE column1 = (SELECT column2 FROM table2 WHERE column2 = condition);
+    WITH alias AS (SELECT column FROM table) SELECT * FROM alias;
+    WITH alias1 AS (SELECT column1 FROM table1), alias2 AS (SELECT column2 FROM table2) SELECT * FROM alias1 JOIN alias2 ON condition;
+    SELECT *,
+        CASE column
+            WHEN value THEN alias
+            WHEN value THEN alias
+            WHEN value THEN alias
+            ELSE alias
+        END AS alias
+    FROM table;
+    SELECT column1, column2, ROW_NUMBER() OVER(PARTITION BY column1 ORDER BY column2) FROM table;

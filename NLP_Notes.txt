@@ -1,0 +1,190 @@
+Regular Expressions
+
+Feature Engineering
+  Bag of Words
+  Word and Word Characteristics
+  Prev/Next Word (Context)
+  Part of Speech and other Linguistic Classification
+  Trigger Words and Gazetteer Features
+  Sentence Syntactic Features
+     Constituent Path
+     Base Syntactic Chunk Path
+     Typed-Dependency Path
+
+Word2Vec
+
+Naive Bayes
+  Input Features are N-grams w/ Laplace Smoothing
+  Unlike MaxEnt, assumes independence of input features
+
+Maximum Entropy Classifiers
+  Feature Engineering (+1 each time feature occurs, 0 otherwise)
+  Softmax Function across Classes
+  Generalized/Improved Iterative Scaling algorithm to optimize parameters
+     Minimize (Empirical Feature Count - Predicted Feature Count) for each Feature
+  Accounting for Interaction Terms in Overlapping Features
+  L2 Regularization
+
+Maximum Entropy Sequence Models
+  Incorporate previous context using markov model
+  Incorporate future context using beam inference or viterbi interference
+  Conditional Random Fields - model probability of word sequences instead of individual words
+
+Evaluation
+  Test Set Accuracy
+  Perplexity
+  Precision, Recall, and F-Measure
+
+Word Tokenization
+  Tf-idf Vectorization
+  Stop Words
+  Minimum Document Frequency
+  Accounting for Unknown Words
+  Stemming, Lemmatization
+
+N-Gram Smoothing
+  Laplace Smoothing (Add One Smoothing)
+  Interpolation (Weighted Trigram, Bigram, and Unigram Probabilities)
+  Good Turing (Set probability of N-grams with 0 frequency to that of N-gram that occurred once)   
+  Kneser-Ney (Count instances of novel continuation instead of occurence)
+  Stupid Backoff Smoothing for Large Word Sets (if N-Gram prob < limit, use N-1-Gram)
+
+Spelling Correction
+  Minimum Edit Distance
+  Edit Probability
+  Bigram Likelihood using Prior and Posterior Word
+
+Generating Sentiment Lexicons
+  With seed set, words connected with 'and' are same sentiment, words connected with 'but' are opposite sentiment
+  With seed set, synonyms are same sentiment, antonyms are opposite sentiment
+
+Named Entity Recognition
+  Boundary Recognition
+  IO vs IOB encoding
+  Recognizing Entity Type
+  Classify using MaxEnt Model
+
+Relation Extraction
+  Relation Triples: Relation (Subject, Object)
+  Supervised Learning: model to find pairs of named entities, separate model to classify relations
+  Semi/Unsupervised Relation Boostrapping using Seed Relations to Iteratively Learn Relationship Features
+  Distant Supervision with Database of Existing Relations and Text Corpus to Learn Relationship Features
+  Open Information Extraction, Text Runner Algorithm
+
+Part-of-Speech Tagging
+  Penn Treebank POS tags
+  Baseline - Use most common POS associated with each word for words in corpus
+  Other features
+    Neighbor POS tags
+    POS probabilities per word
+    Word properties - prefixes, suffixes, lowercased, capitalization, spelling, word shape
+    Prev/Next words in relation to current word
+
+Constituency Parsing (parse into tree of phrase structures)
+  Phrase Structure Grammars/Context Free Grammars
+    Analyzing Probability of Parse Trees and Sentences
+    Prebuilt Tree Banks (e.g. Penn Treebank)
+  Dynamic Programming - CKY Parsing
+    Chomsky Normal Form and Binarization of Grammar Trees
+    Construct Parse Triangle Chart using PCFG
+    Evaluate Accuracy based on Binary Subtree Brackets Correctly Classified
+  PCFG Lexicalization - include probability of head word of phrases
+    Linear Interpolation/Scaling - P(headword | category, parent headword, parent category)
+  State Splitting - for each phrase include conditional probability of parent/child phrases
+    Additional splitting for possesive NPs, finite/infinite VPs, SBAR sequential complementers, etc
+    Closed Class Words as indicators of phrase
+    Horizontal and Vertical Markovization w/ Binarization to reduce grammar complexity
+  Latent Variable PCFGs - Machine Learning for state splitting
+    EM Algorithm w/ Split/Merge Category Refinement
+    Discriminative Reranker
+    Combining Consituent Parsers
+
+Dependency Parsing (parse into words that modify/argue other words)
+  Features
+    Bilexical Dependencies (words that commonly depend on each other)
+    Dependency Distance
+    Intervening Material (e.g. punctuation)
+    Valency of Heads (typical number of dependents for a word)
+    Word Lexical Properties (e.g. POS of word, POS of dependent word)
+  Methods
+    Dynamic Programming
+    Graph Algorithms for Dependency Parsing
+      Maximum Spanning Tree Parser
+    Constraint Satisfaction
+    Deterministic Parsing (Greedy Transition-Based Parsing)
+      Arc-Eager Dependency Parsing
+      MaltParser
+      Beam Search to explore Parse Possibilities
+
+Information Retrieval and Search
+  Term-document incidence matrices
+  Inverted Index - dictionary w/ word IDs as keys (terms), sets of doc IDs w/ words as values (postings)
+  Phrase Queries
+    Biword Indexing - use consecutive word pairs as keys
+    Positional Indexing - include word positions with doc IDs
+  Ranked Retrieval
+    Jaccard Coefficient - intersection/union of search terms and document terms
+    Term Frequency Inverse Document Frequency Scoring
+    Vector Space Proximity, Length Normalization, and Cosine Similarity
+
+Word Sense Disambiguation
+  Thesauruses - Synsets, Glosses, and Hyponym/Hypernym Hierarchies
+    WordNet
+    MeSH (Medical Subject Headings)
+  Word Similarity and Relatedness
+    Thesaurus Based Algorithms
+      Path based similarity (in Hyponym/Hypernym Hierarchy)
+      Information Content Similarity Metrics
+        Resnik Method - information content of lowest common subsumer of two nodes
+        Dekang Lin Method - (2 * ic of lcs of a and b)/(ic of a + ic of b)
+        Lesk Algorithm - compare glosses of two concepts
+    Distributional Algorithms
+      Cosine Similarity in Term-Context Matrix
+      Cosine Similarity in Co-Occurence Matrices Based on Syntactic Dependency Relations
+      Positive Pointwise Mutual Information (with add-one smoothing)
+
+Question Answering
+  Factoid Questions
+    Information Retrieval Approach (e.g. Search Internet for Answer)
+      Question Processing
+        Answer Type Detection - decide named entity type of answer
+          "Wh" word and question headword after "wh" word
+          Machine Learning using question words and other linguistic/semantic features
+        Query Formulation - choose query keywords to use for search
+          Keyword Selection Algorithm (Moldovan et al)
+        Question Type Classification, Focus Detection, and Relation Extraction
+      Document and Passage Retrieval
+        Retrieve Documents
+        Segment into passages (e.g. paragraphs)
+        Rank Passages (e.g. number of query words in passage, named entities in passage, etc)
+      Answer Processing
+        Named Entity Tagging
+        Return Correct String (machine learning to score possible answers)
+    Knowledge-Based and Hybrid Approaches
+      Semantic Representation of Query
+        Relation Extraction
+      Map from semantics to structured data or resources
+        Databases of Relations
+        Temporal Reasoning, Geospatial Knowledge, and other relational reasoning
+    Evaluation
+      Mean Reciprocal Rank
+  Narrative (Complex) Questions
+    Query Focued Summarization
+      Bottom Up Snippet Method
+        Bottom Up Snippet Method
+          Sentence Segmentation
+          Sentence Simplification (Remove less important parsed phrases/modifiers)
+          Sentence Extraction (Log Likelihood Ratio + Maximal Marginal Relevance)
+        Top Down Information Extraction Method
+
+Summarization
+  Single Document Summarization
+  Multiple Document Summarization
+  Generic Summarization
+  Query-Focused Summarization (for Complex Question Answering)
+  Extractive Summarization
+    Content Selection
+    Information Ordering
+    Sentence Realization
+  Abstractive Summarization (use different words to summarize)
+  Recall Oriented Understudy for Gisting Evaluating (ROUGE)

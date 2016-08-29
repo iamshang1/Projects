@@ -1,0 +1,219 @@
+Sampling
+  Rejection Sampling
+  Importance Sampling
+  Sampling-Importance-Resampling
+  Markov Chain Monte Carlo
+  Gibbs Sampling
+
+Exploratory Data Analysis
+  Box Plots, Scatter Plots, Probability Distributions
+  Confidence Intervals and Significance for Each Feature
+  Feature Correlation
+
+Feature Engineering
+  Feature Scaling and Mean Normalization
+  Polynomial Features and Feature Transformations
+  Rebalancing Skewed Datasets
+  Generating Synthetic Data
+
+Feature Selection
+  Filter vs Wrapper Method
+  Stepwise Regression and Recursive Feature Elimination
+  L1 Lasso Sparsity for Feature Elimination
+
+Dimensionality Reduction
+  Principal Component Analysis
+    PCA Loadings Plot
+    Singular Value Decomposition > Covariance Matrix (via Matrix Condition Numbers)
+  Independent Component Analysis
+  Random Projections
+  T-Distributed Stochastic Neighbor Embedding
+
+Maximum Likelihood Estimation
+  Log Likelihood Maximization
+  Fisher's Score Function and Observed/Expected Fisher Information
+
+Maximum A Posteriori Estimation
+  Conjugate Priors
+  Effect of Prior and Observed Sample Size on Posterior Distribution
+
+Probability Distributions
+  Gaussian Distributions
+  Binomial and Beta Distributions
+  Multinomial and Direchlet Distributions
+  Poisson distributions
+
+---
+
+Supervised, Unsupervised, and Reinforcement Learning
+
+Gradient Descent
+  Cost Function Minimization
+     Regression and Least Squares
+     Logistic and Logistic Loss
+     Softmax and Cross Entropy
+     Multiclass Probability Distributions and Kullback Leibler Divergence
+  Learning Rate Selection
+  Number of Iterations
+  Simulated Annealing
+  Batch and Stochastic Gradient Descent
+
+Curse of Dimensionality
+  Overfitting and Exponential Data Requirements
+  Data Distribution for High-Dimensional Hypercubes and Gaussians
+  P>N Datasets and Sparse Matrices
+
+Preventing Overfitting
+  Add More Data
+  Regularization
+  Averaging Models (Boosting/Bagging/Ensemble)
+  Bayesian Techniques
+  
+Regularization
+  L1 Lasso (usually better for sparse data)
+  L2 Ridge (usually better for dense data)
+  L1 + L2 Elasticnet
+  
+Cross Validation Methods
+  K-Folds CV and One Standard Error Rule
+  Train/Validation/Test Split for Parameter Fitting
+
+Confidence Intervals
+  Gaussian Processes
+  Bootstrap for Standard Errors of CV Accuracy
+  Bootstrap for Standard Error of Model Parameters
+
+Bias Variance Tradoff
+  Test/Train Error vs Model Complexity
+  Test/Train Error vs #Grad Desc Iterations
+  Test/Train Error vs #Data Points
+  Vapnik-Chervonenkis Dimensions and Structural Risk Minimization
+
+Classification Accuracy
+  Misclassification Rate
+  Cross Entropy Loss Minimization
+  Receiver Operating Characteristic Curve
+  Precision Recall Curve
+  F1 Score
+  McNemar Test for Comparing Classifiers
+
+Regression Accuracy
+  Root Mean Square Error
+  Adjusted R-Squared and Explained Variance
+  Mallow's Cp, Akaike Information Criterion, and Bayesian Information Criterion
+
+Multiclass Classification
+  One vs All
+  One vs One
+  Confidence Thresholds
+
+---
+
+Linear Regression
+  Regularized Linear Regression
+
+Nonlinear Regression
+  Polynomial Regression
+  Piecewise Regression and Local Regression
+  Natural Cubic Splines and Smoothing Splines
+  General Additive Models
+
+Logistic Regression  
+  
+Linear Discriminant Analysis
+  Quadratic Discriminant Analysis
+
+Nearest Neighbors
+  Distance Metrics
+
+Naive Bayes
+  Gaussian
+  Multinomial
+  Laplace Smoothing
+
+Decision Trees
+  Recursive Binary Splitting via Entropy/Gini Impurity Minimization
+  Cost Complexity Pruning
+  
+Tree/Graph Search
+  Breath First Search and Beam Search
+  Depth First Search and Branch and Bound
+  Minimax and Alpha Beta Pruning
+
+Ensemble Learning
+  Bootstrap Aggregation
+  Random Forests
+  Adaboost
+  Gradient Boosting and XGBoost
+
+Support Vector Machines
+  Support Vectors and Margin Maximization
+  Soft Margin Regularization
+  Polynomial Feature Expansion and Kernel Functions
+  Radial Basis Kernel and Gamma Regularization
+
+Neural Networks
+  Forward and Backpropogation
+  Feedforward NN
+  Recurrent NN
+  Convolutional NN
+
+Clustering
+  K-Means Clustering
+  Hierarchical Clustering
+  Elbow Method for Explained Variance
+  Silhouette Analysis
+  Expectation Maximization
+
+Anomaly Detection
+  Gaussian and Multivariate Gaussian Distributions
+
+Genetic Algorithms
+  Estimation of Distribution
+  Particle Swarm Optimization
+
+Reinforcement Learning
+  Markov Decision Processes
+  Partially Observable Markov Decision Processes
+  Q-Learning, Temporal Difference Learning
+  Monte Carlo Tree Search
+
+Graphical Models
+  Bayesian Belief Networks
+  Markov Logic Networks
+
+Topic Modeling
+  Latent Dirichlet Allocation
+  Normalized Compression Distance
+
+Recommendation Systems
+  Collaborative Filtering
+  Basket Analysis
+
+Computer Vision
+  Haralick features
+  Local Binary Patterns
+  Convolutional Neural Networks
+
+Natural Language Processing
+  Bag of Words / N-Grams
+  Maximum Entropy Models
+  Parse Trees and Recursive Neural Networks
+
+---
+
+GPU Processing
+  CUDA
+  OpenBLAS
+
+Hadoop Distributed File System
+  MapReduce
+    Hadoop Streaming - Python for MapReduce
+    Hive - SQL for MapReduce
+    Pig - Analyzer Language for MapReduce
+  Spark - In-Memory Analytics for HDFS Data
+  Impala - SQL for HDFS Data
+  HBase - Database for HDFS Data
+  Sqoop - Transfer Relational Database Data to HDFS
+  Flume - Transfer External Data to HDFS
+  Mahout - Machine Learning Library for HDFS

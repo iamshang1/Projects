@@ -1,0 +1,86 @@
+﻿Architectures
+   Feedforward
+      Branching and Serialization
+   Recurrent
+      Gated Recurrent Unit
+      Long Short Term Memory
+      Echo State Networks
+      Bi-Directional RNN
+   Recursive
+      Matrix Vector Recursive Neural Netowrk
+      Recursive Neural Tensor Network
+   Convolutional
+   Mixture Models w/ Manager and Experts
+   Hopfield Nets and Restricted Boltzmann Machines
+   Sigmoid Belief Nets and Deep Belief Nets
+   Autoencoders
+
+Activation Functions
+   tanh
+   sigmoid
+   Rectified Linear Units
+   softmax
+
+Cost Functions
+   squared error
+   cross entropy
+   
+Gradient Descent
+   stochastic
+   minibatch
+   batch
+   momentum
+   rprop and rmsprop
+   adagrad
+   adadelta
+   adam
+   
+   Newton's Method
+   Limited Memory Broyden–Fletcher–Goldfarb–Shanno Algorithm
+   Hessian Free Optimization and Conjugate Gradients
+
+Learning Rate
+   constant
+   decay
+   bold driver
+   annealing
+   adaptative learning rate for each parameter
+   
+Preventing Overfitting
+   Add More Data
+      Bootstrapping, Patch Selection (for images), and Synthetic Data
+   Use a Simpler Model
+   Early Stopping based on Validation Set Accuracy
+   LaGrange Constraints on Input Weight Vector Length per Node
+   L1/L2 Regulazation
+   Add Gaussian Noise to Intpus or Weights
+   Stochastic Binary Activation Units with Regular Sigmoid Backprop
+   Maximum A Posterior (Bayesian) Weight Decay
+      MacKay's Method - Output Error Variance and Layer Weight Variance
+   Full Bayesian Learning
+      Grid points that represent possible parameter space
+      Distribution = Grid Point | Data * Output | Data and Grid Point
+      Markov Chain Monte Carlo w/ Random Movement or MiniBatches for evaluating grid points
+   Average Different Models (e.g. Boosting/Bagging)
+   Dropout Regularization
+   
+Optimization Tricks
+   Input Feature Mean/Std Normalization
+   Random Weight Initialization Based on Fan-In/Fan-Out
+   Orthogonal Weight Initialization
+   Batch Normalization
+   Residual Deep Learning
+   Competitive Normalization and Max Pooling for Convolutional NN
+   Gradient Clipping for Recurrent NN
+   Generatively pre-train deep nets using RBM layers
+   Distributed Computing and GPU Optimization
+  
+Other Applications
+   Feature Reduction and Selection
+   Predicting Input Feature Similarity By Comparing Learned Feature Layers
+
+NN Libraries and Tools
+   theano
+   tensorflow
+   ms cntk
+   ms cognitive services
