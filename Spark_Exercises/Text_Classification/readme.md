@@ -64,4 +64,4 @@ Next, run the following commands on each machine from the /home/ec2-user directo
 
 Finally, run the following from the /home/ec2-user/team-1-project1 directory on the Master:
 
-- spark-submit --master *Master Spark IP* --deploy-mode client --driver-memory 30g --executor-memory 7g --num-executors 16 --executor-cores 2 --files preprocessing.py,naive_bayes.py pipeline_combined_nm.py
+- spark-submit --master *Master Spark IP* --deploy-mode client --driver-memory 30g --executor-memory 7g --num-executors 16 --executor-cores 2 --files preprocessing.py,naive_bayes.py pipeline_nb_large.py
