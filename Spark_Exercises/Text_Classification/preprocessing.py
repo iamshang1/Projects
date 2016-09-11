@@ -118,7 +118,7 @@ class preprocessor(object):
             raise TypeError("Arguments must be pySpark RDDs")            
 
         #word tokenization
-        X = X.map(self._tokenize)
+        X = X.map(self._tokenize).cache()
         
         #create dictionary of words
         if train:
