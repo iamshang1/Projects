@@ -3,14 +3,9 @@ import theano
 import theano.tensor as T
 from theano.tensor.nnet import conv2d
 from theano.tensor.signal import downsample
-from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 import sys
 import glob
-import matplotlib.pyplot as plt
-from sklearn.cross_validation import train_test_split
 import random
-
-srng = RandomStreams()
 
 X_train = np.load('X_train_zca.npy')   
 y_train = np.genfromtxt('../data/y_train.txt')
