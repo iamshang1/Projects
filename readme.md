@@ -27,4 +27,5 @@
 
 ###Distributed ML Exercises
 - Document Classification on Apache Spark
+- Multi-GPU Image Classification in TensorFlow
 - Malware Classification on Apache Spark
