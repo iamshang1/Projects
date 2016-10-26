@@ -147,16 +147,16 @@ def average_gradients(tower_grads):
         average_grads.append(grad_and_var)
     return average_grads
 
-#average the gradients over each of the 4 GPUs  
+#average the gradients over each of the GPUs  
 grads = average_gradients(grad)
 
-#average the loss over each of the 4 GPUs
+#average the loss over each of the GPUs
 losses = tf.reduce_mean(loss, 0)
 
 #apply the averaged gradient
 apply_gradient = optimizer.apply_gradients(grads)
 
-#combine last layer output of 4 GPUs for additional calculations during cross validation
+#combine last layer output of GPUs for additional calculations during cross validation
 lastLayers = tf.concat(0, lastLayer)
 prediction = tf.nn.softmax(lastLayers)
 correct_prediction = tf.equal(tf.argmax(prediction,1), tf.argmax(tfy,1))
