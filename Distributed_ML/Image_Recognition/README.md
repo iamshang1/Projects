@@ -47,8 +47,8 @@ We recommend running the following scripts on an AWS G2 instance. Be sure to all
 
 Once your environment has been setup, download the project files and run the following:
 - **generate input data:** python preprocessing.py
-- **predict using single GPU/CPU (recommended):** python model_single_gpu.py
-- **predict using multiple GPUs:** python model_multi_gpu.py \<number of GPUs\> \<batch size\>
+- **predict using single GPU/CPU:** python model_single_gpu.py
+- **predict using multiple GPUs:** python model_multi_gpu.py \<number of GPUs, must be at least 2\> \<batch size\>
 
 Cross validation accuracy is recorded every 100 iterations to *accuracy.txt*. 
 Predictions are saved every 5000 iterations to *prediction.txt*.
