@@ -4,14 +4,12 @@ import theano.tensor as T
 from theano.tensor.nnet import conv2d
 from theano.tensor.signal import downsample
 import sys
-import glob
-from sklearn.cross_validation import train_test_split
 import random
 
-input = np.load('X_train_zca.npy')   
-labels = np.genfromtxt('../data/y_train.txt')
-
-X_train, X_test, y_train, y_test = train_test_split(input, labels, test_size=0.1, random_state=42, stratify=labels)
+X_train = np.load('X_train.npy')   
+y_train = np.load('y_train.npy')
+X_test = np.load('X_test.npy')   
+y_test = np.load('y_test.npy')
 
 convolutional_layers = 6
 feature_maps = [3,80,80,160,160,320,320]

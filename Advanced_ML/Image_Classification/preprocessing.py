@@ -1,13 +1,16 @@
-import subprocess
-import urllib
+import os
+import glob
 import numpy as np
-from PIL import Image
 from scipy.linalg import svd
 import theano
 import theano.tensor as T
+import cPickle
+import sys
+import urllib2
+import tarfile
 
 '''
-download train and test images from S3 to local drive
+download cifar-10 dataset if not already downloaded
 convert images to numpy arrays and save
 apply ZCA whitening and save
 
@@ -15,54 +18,69 @@ outputs:
 .npy files of images in shape (images,3,32,32)
 '''
 
-#Read Input
-X_train = "../data/X_train.txt"
-X_test = "../data/X_test.txt"
-files = [X_train,X_test]
+#download cifar-10 dataset if not found
+if not os.path.isdir('./cifar-10-batches-py') and not os.path.isfile('cifar-10-python.tar.gz'):
 
-#download files
-filenames = []
-for file in files:
-    with open(file,'r') as f:
-        filenames += f.readlines()
+    url = 'https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz'
+    file_name = url.split('/')[-1]
+    u = urllib2.urlopen(url)
+    f = open(file_name, 'wb')
+    meta = u.info()
+    file_size = int(meta.getheaders("Content-Length")[0])
+    print "Downloading: %s\nTotal Bytes: %i" % (url, file_size)
 
-for i in xrange(len(filenames)):
-    file = filenames[i].replace('\n','').strip()
-    print 'Getting file %i of %i: %s' % (i+1,len(filenames),file)    
-    imgopen = urllib.URLopener()
-    imgopen.retrieve('https://s3.amazonaws.com/eds-uga-csci8360/data/project3/images/%s.png' % file, "./data/images/%s.png" % file)
+    file_size_dl = 0
+    block_sz = 8192
+    while True:
+        buffer = u.read(block_sz)
+        if not buffer:
+            break
 
-#convert images to numpy arrays
-for k in range(2):
-    with open(files[k],'r') as f:
-        filenames = f.readlines()
+        file_size_dl += len(buffer)
+        f.write(buffer)
+        p = float(file_size_dl) / file_size
+        status = r"{0}  [{1:.2%}]".format(file_size_dl, p)
+        status = status + chr(8)*(len(status))
+        sys.stdout.write(status)
 
-    inputs = []
-        
-    input = np.empty((0,3,32,32))
-    for i in xrange(len(filenames)):
-        if i % 1000 == 0:
-            inputs.append(input)
-            input = np.empty((0,3,32,32))
-        print 'Loading file %i of %i:' % (i+1,len(filenames))
-        file = filenames[i].replace('\n','').strip()
-        image = Image.open("./data/images/%s.png" % file)
-        img = np.array(image,dtype='float64')/256
-        img = img.transpose(2, 0, 1).reshape(1,3,32,32)
-        input = np.concatenate((input,img),axis=0)
-        image.close()
-    inputs.append(input)
+    f.close()
 
-    final = np.empty((0,3,32,32))
-    for i in xrange(len(inputs)):
-        print 'Combining chunks %i of %i:' % (i+1,len(inputs))
-        final = np.concatenate((final,inputs[i]),axis=0)
+#extract cifar-10 dataset if not already extracted
+if not os.path.isdir('./cifar-10-batches-py'):
+    print 'extracting cifar-10-python.tar.gz'
+    tar = tarfile.open('cifar-10-python.tar.gz')
+    tar.extractall()
+    tar.close()
     
-    if k == 0:
-        np.save('X_train', final)
-    else:
-        np.save('X_test', final)
+#function to unpickle cifar-10 images
+def unpickle(file):
+    import cPickle
+    fo = open(file, 'rb')
+    dict = cPickle.load(fo)
+    fo.close()
+    return dict
 
+train = glob.glob('./cifar-10-batches-py/data_*')
+test = glob.glob('./cifar-10-batches-py/test_*')
+
+#convert cifar-10 dataset to test and train numpy arrays
+X_train = np.empty((0,3,32,32))
+y_train = np.empty(0)
+for file in train:
+    dict = unpickle(file)
+    X_train = np.concatenate((X_train,dict['data'].reshape(10000,3,32,32)),axis=0)
+    y_train = np.concatenate((y_train,dict['labels']))
+    
+X_test = np.empty((0,3,32,32))
+y_test = np.empty(0)
+for file in test:
+    dict = unpickle(file)
+    X_test = np.concatenate((X_test,dict['data'].reshape(10000,3,32,32)),axis=0)
+    y_test = np.concatenate((y_test,dict['labels']))
+    
+np.save('y_train', y_train)
+np.save('y_test', y_test)
+    
 #zca whitening
 #credit goes to https://github.com/sdanaipat/Theano-ZCA
 print 'applying ZCA whitening'
@@ -99,11 +117,9 @@ class ZCA(object):
         self.fit(X)
         return self.transform(X, eps)
         
-X_train = np.load('X_train.npy')
 X_train_shape = X_train.shape
 X_train_flattened = X_train.reshape(X_train_shape[0],np.prod(X_train_shape[1:]))
 
-X_test = np.load('X_test.npy')
 X_test_shape = X_test.shape
 X_test_flattened = X_test.reshape(X_test_shape[0],np.prod(X_test_shape[1:]))
 
@@ -117,5 +133,5 @@ X_test_output = output[X_train_shape[0]:]
 X_train_output = X_train_output.reshape((X_train_shape[0],X_train_shape[1],X_train_shape[2],X_train_shape[3]))
 X_test_output = X_test_output.reshape((X_test_shape[0],X_test_shape[1],X_test_shape[2],X_test_shape[3]))
 
-np.save('X_train_zca', X_train_output)
-np.save('X_test_zca', X_test_output)
+np.save('X_train', X_train_output)
+np.save('X_test', X_test_output)

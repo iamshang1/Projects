@@ -37,8 +37,5 @@ Ensure the following Python packages are installed on your instance:
 - scipy
 
 Once your environment has been setup, download the project files and run the following:
-- **generate input data:** python preprocessing.py *(Note that the dataset is downloaded from an AWS S3 archive which may no longer be available)*
-- **check accuracy on cross validation:** python cross_validation_model.py
-- **predict on test set:** python production_model.py
-
-Predictions are saved every 5000 iterations to *prediction.txt*.
+- **generate input data:** python preprocessing.py
+- **run conv net:** python convnet.py
