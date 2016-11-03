@@ -53,6 +53,7 @@ all predictions and rounded it to 1 or 0 to determine the final label for that p
 ## Model Performance
 The model achieved the following performance metrics across the 9 test datasets:
 
+![score](https://github.com/iamshang1/Projects/blob/master/Advanced_ML/Neuron_Detection/score.png)
 
 This is as good as or better than most of the traditional models which use PCA, ICA,
 or NMF. For additional information about how these metrics are calculated, refer to the

@@ -23,6 +23,7 @@
 - Comparing Techniques to Improve Deep Learning Performance
 - Finding Dory in Movie Stills
 - Image Classification on CIFAR-10
+- Automated Neuron Detection in Calcium Imaging Data
 - Using LSTMs to create a Language Model of Hitchhiker's Guide to the Galaxy
 
 ###Distributed ML Exercises
