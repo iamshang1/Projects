@@ -42,9 +42,9 @@ We used the following architecture for our convolutional network:
 - orthogonal weight initialization
 - batch size 100, 10000 training iterations
 
-During training, we were also careful to ensure that each training batch was
-evenly split between pixels belonging to neurons and pixels that did not belong to
-neurons.
+During training, we selected random windows from the training images. We were careful to ensure 
+that each training batch wasevenly split windows centered on neurons and windows not centered
+on neurons.
 
 During testing, we ran the sliding window with a stride of 1 across the test image. This means
 every pixel was predicted multiple times. For each pixel, we took the mean probability across
