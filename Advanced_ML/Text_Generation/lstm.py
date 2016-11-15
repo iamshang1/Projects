@@ -37,11 +37,11 @@ class lstm(object):
         self.b2 = theano.shared(np.asarray(np.random.uniform(low=-0.1,high=0.1,size=(72)),dtype=theano.config.floatX))
         self.target = T.matrix()
         
-        self.params = [self.Wi,self.Wf,self.Wc,self.Wo,self.Ui,self.Uf,self.Uc,self.Uo,self.bi,self.bf,self.bc,self.bo,self.h0,self.C0,self.W2,self.b2]
+        self.params = [self.h0,self.C0,self.Wi,self.Wf,self.Wc,self.Wo,self.Ui,self.Uf,self.Uc,self.Uo,self.bi,self.bf,self.bc,self.bo]
         [self.c,self.h_output],_ = theano.scan(fn=self.step,sequences=self.input,outputs_info=[self.C0,self.h0],non_sequences=self.params[:-4])
         self.output =  T.nnet.softmax(T.dot(self.h_output,self.W2)+self.b2)[40:,:]
         self.cost = T.nnet.categorical_crossentropy(self.output,self.target).mean()
-        self.updates = self.adam(self.cost,self.params)
+        self.updates = self.adam(self.cost,self.params+[self.W2,self.b2])
         self.train = theano.function([self.input,self.target],self.cost,updates=self.updates,allow_input_downcast=True)
         self.predict = theano.function([self.input],self.output,allow_input_downcast=True)
 
