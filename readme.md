@@ -1,12 +1,12 @@
 # Shang's Machine Learning Portfolio
 
 ###Basic ML Exercises
-- Comparing Runtime and Performance of Different Classifiers
-- Visualizing Document Similarity
-- Exploratory Data Analysis on Forbes 2000 Dataset
-- Comparing Feature Selection Metrics
-- Simple Genetic Algorithms
-- Basic Image Classification Techniques
+- [Comparing Runtime and Performance of Different Classifiers] (https://github.com/iamshang1/Projects/tree/master/Basic_ML/Classifier_Comparison)
+- [Visualizing Document Similarity] (https://github.com/iamshang1/Projects/tree/master/Basic_ML/Document_Similarity)
+- [Exploratory Data Analysis on Forbes 2000 Dataset] (https://github.com/iamshang1/Projects/tree/master/Basic_ML/Exploratory_Data_Analysis)
+- [Comparing Feature Selection Metrics] (https://github.com/iamshang1/Projects/tree/master/Basic_ML/Feature_Selection)
+- [Simple Genetic Algorithms] (https://github.com/iamshang1/Projects/tree/master/Basic_ML/Genetic_Algorithm)
+- [Basic Image Classification Techniques] (https://github.com/iamshang1/Projects/tree/master/Basic_ML/Image_Classification)
 - Best K for K-Means Clustering
 - Markov Chain Monte Carlo for Decoding Text Ciphers
 - Visualizing Neural Network Training Process
