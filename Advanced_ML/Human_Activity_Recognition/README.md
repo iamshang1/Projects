@@ -6,6 +6,8 @@ monitoring devices (e.g. accelerometers, heart rate monitors) to a person while 
 person is performing different activities. This study compares the performance of different
 classiﬁers on a human activity recognition dataset.
 
+For an in-depth write up of this project, see [paper.pdf](https://github.com/iamshang1/Projects/blob/master/Advanced_ML/Human_Activity_Recognition/Paper.pdf).
+
 ##Files
 The following scripts are used for this project:
 
