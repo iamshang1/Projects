@@ -22,6 +22,7 @@
 ###Advanced ML Exercises
 - [Comparing Techniques to Improve Deep Learning Performance] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Deep_Learning)
 - [Finding Dory in Movie Stills] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Finding_Dory)
+- [Human Activity Recognition] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Human_Activity_Recognition)
 - [Image Classification on CIFAR-10] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Image_Classification)
 - [Automated Neuron Detection in Calcium Imaging Data] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Neuron_Detection)
 - [Using LSTMs to create a Language Model of Hitchhiker's Guide to the Galaxy] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Text_Generation)
