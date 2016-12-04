@@ -70,7 +70,7 @@ splitting. This yields a total of four test accuracies per model:
  - Between-subject 2-category classification
  - Between-subject 5-category classification
 
-For additional information about these models, see [paper.pdf](https://github.com/eds-uga/shang-final-project/blob/master/Paper.pdf).
+For additional information about these models, see [paper.pdf](https://github.com/iamshang1/Projects/blob/master/Advanced_ML/Human_Activity_Recognition/Paper.pdf).
  
 ##Results
 XGBoost had the best performance across all categories of evaluation. LSTMs performed well
@@ -80,7 +80,7 @@ remained competitive with the other models without any need for human feature en
 and achieved the second-best score in between-subject 5 category classification, which is
 arguably the most difficult classification in this experiment.
 
-![results](https://github.com/eds-uga/shang-final-project/blob/master/results.png)
+![results](https://github.com/iamshang1/Projects/blob/master/Advanced_ML/Human_Activity_Recognition/results.png)
 
 ##Instructions to Run Models
 
