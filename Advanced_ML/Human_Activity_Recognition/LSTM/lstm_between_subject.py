@@ -1,12 +1,8 @@
 import numpy as np
 import theano
 import theano.tensor as T
-try:
-    import cPickle as pickle
-except:
-    import pickle
 import sys
-from sklearn.model_selection import train_test_split
+import random
 
 sys.setrecursionlimit(10000)
 
@@ -145,14 +141,35 @@ else:
     print 'Usage: python lstm_between_subject.py <1 for 2-category labels, 0 for 5-category labels>'
     exit(1)
 
+#separate training data by label
+X_train_split = []
+y_train_split = []
+if binary:
+    for i in range(2):
+        idx = y_train[:,i] == 1
+        X_train_split.append(X_train[idx])
+        y_train_split.append(y_train[idx])
+else:
+    for i in range(5):
+        idx = y_train[:,i] == 1
+        X_train_split.append(X_train[idx])
+        y_train_split.append(y_train[idx])
+
+combined_split = zip(X_train_split,y_train_split)
+
 #train
 NN = lstm(binary=binary)
 
 for i in range(1000000):
-    #select random training sample
-    idx = np.random.randint(y_train.shape[0])
-    X_in = X_train[idx,:,:]
-    y_in = np.expand_dims(y_train[idx,:],0)
+    #select a random training label
+    idx = random.choice(combined_split)
+    X_in = idx[0] 
+    y_in = idx[1]
+
+    #select random training sample with that label
+    idx = np.random.randint(y_in.shape[0])
+    X_in = X_in[idx,:,:]
+    y_in = np.expand_dims(y_in[idx,:],0)
     
     #train on random sample
     cost = NN.train(X_in,y_in)
