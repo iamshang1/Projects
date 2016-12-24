@@ -18,6 +18,7 @@
 - [Simple Regression of Web Traffic Data] (https://github.com/iamshang1/Projects/tree/master/Basic_ML/Sentiment_Analysis)
 - [Email Spam Detection] (https://github.com/iamshang1/Projects/tree/master/Basic_ML/Spam_Detection)
 - [Topic Modeling of Forum Posts] (https://github.com/iamshang1/Projects/tree/master/Basic_ML/Topic_Modeling)
+- [Visualizing Word2Vec] (https://github.com/iamshang1/Projects/tree/master/Basic_ML/Word2Vec)
 
 ###Advanced ML Exercises
 - [Comparing Techniques to Improve Deep Learning Performance] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Deep_Learning)
