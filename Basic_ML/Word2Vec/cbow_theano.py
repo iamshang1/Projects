@@ -68,17 +68,18 @@ class cbow(object):
         self.activeidx = T.ivector()
         self.activew1 = T.take(self.w1, self.activeidx, axis=0)
         self.l1out = T.dot(self.input,self.activew1)
+        self.w2 = theano.shared((np.random.rand(self.es,self.ds).astype(theano.config.floatX)-0.5),borrow=True)
         self.sampidx = T.ivector()
-        self.sampw2 = T.take(self.w1.T, self.sampidx, axis=1)
+        self.sampw2 = T.take(self.w2, self.sampidx, axis=1)
         self.l2out = T.nnet.softmax(T.dot(self.l1out,self.sampw2))
         self.target = T.matrix()
        
         #nn functions
-        self.params = [self.w1]
-        self.cost = T.nnet.categorical_crossentropy(self.l2out,self.target).mean()
-        self.gparams = [T.grad(self.cost, param) for param in self.params]
-        self.propogate = theano.function([self.input,self.target,self.activeidx,self.sampidx],self.cost,\
-            updates=[(param,param-self.lr*gparam) for param,gparam in zip(self.params,self.gparams)],allow_input_downcast=True)
+        self.z = (self.l2out - self.target).T
+        self.w1update = T.set_subtensor(self.w1[self.activeidx,:], self.w1[self.activeidx,:] - T.dot(self.sampw2, self.z).flatten()*self.lr)
+        self.w2update = T.set_subtensor(self.w2[:,self.sampidx], self.w2[:,self.sampidx] - T.outer(self.z, self.l1out).T*self.lr)
+        self.propogate = theano.function([self.input,self.target,self.activeidx,self.sampidx],\
+            updates = [(self.w1,self.w1update),(self.w2,self.w2update)],allow_input_downcast=True)
         
     def _tokenize(self,dataset):
         '''
