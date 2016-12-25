@@ -36,10 +36,11 @@ class cbow(object):
         number of words to use for negative sampling
         
     methods:
-      - train(batch_size)
-        train one step of word2vec model on dataset
-        outputs:
-          - training cost at given iteration
+      - train(iterations)
+        train word2vec model on all words in dataset
+        parameters:
+          - iterations: int (default 1)
+            number of times to iterate over all words in dataset
       - visualize_most_common(words)
         saves scatter plot of most common words to disk
         parameters:
@@ -122,30 +123,37 @@ class cbow(object):
         
         print "total words in dataset: %i" % len(self.data)
         
-    def train(self):
+    def train(self,iterations=1):
+        '''
+        train word2vec model on all words in dataset
+        parameters:
+          - iterations: int (default 1)
+            number of times to iterate over all words in dataset
+        '''
+        for i in range(iterations):
+            print "training iteration %i" % (i+1)
+            for idx in range(self.sw,len(self.data)-self.sw):
+                sys.stdout.write("processing word %i of %i    \r" % (idx+1, len(self.data)-5))
+                sys.stdout.flush()
+                self._train_one_step(self.data[idx])
+        
+    def _train_one_step(self,idx):
         '''
         train one step of word2vec model on dataset
-        outputs:
-          - training cost at given iteration
         '''
-        #init arrays to store neighbor words, target word
+        #init arrays to store neighbor words
         batch = np.zeros((1,self.ds))
         labels = np.zeros((1,self.ds))
         
         #indices for neighbor words and negative sampling
         activeidx = []
         sampidx = []
-        
-        #select random word as target word
-        idx = np.random.randint(self.sw,len(self.data)-self.sw)
         wordid = self.data[idx]
         
         #probabilistically discard common words
         count = self.most_common[wordid][1]
-        while np.random.rand() < np.sqrt(0.00005/count):
-            idx = np.random.randint(self.sw,len(self.data)-self.sw)
-            wordid = self.data[idx]
-            count = self.most_common[wordid][1]
+        if np.random.rand() < np.sqrt(0.00005/count):
+            return
         
         #get neighboring words
         for j in range(-self.sw,self.sw+1):
@@ -189,7 +197,7 @@ class cbow(object):
         for id in range(words):
         
             #skip id 0 since it represents all unknown words
-            embeddings[id,:] = self.w1.get_value()[id+1,:]
+            embeddings[id,:] = self.w2.get_value()[:,id+1]
             
         #reduce embeddings to 2d using tsne
         tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=7500)
@@ -221,14 +229,9 @@ class cbow(object):
             id = self.word2ids[word]
         else:
             raise Exception('word must be string or id')
-        return self.w1.get_value()[id,:]
+        return self.w1.get_value()[:,id]
 
 #build and train model        
 cbow = cbow(dataset)
-
-for i in range(20000000):
-    if (i+1)%100 == 0:
-        sys.stdout.write("iteration %i cost: %f  \r" % ((i+1)/100,cbow.train()))
-        sys.stdout.flush()
-    if (i+1)%1000000 == 0:
-        cbow.visualize_most_common()
+cbow.train()
+cbow.visualize_most_common()
