@@ -131,11 +131,21 @@ class cbow(object):
             number of times to iterate over all words in dataset
         '''
         for i in range(iterations):
-            print "training iteration %i" % (i+1)
+            print "training iteration %i            " % (i+1)
             for idx in range(self.sw,len(self.data)-self.sw):
                 sys.stdout.write("processing word %i of %i    \r" % (idx+1, len(self.data)-5))
                 sys.stdout.flush()
-                self._train_one_step(self.data[idx])
+                
+                #get word id
+                wordid = self.data[idx]
+                
+                #probabilistically discard common words, skip unknown words
+                count = self.most_common[wordid][1]
+                if wordid==0 or np.random.rand() < np.sqrt(0.00005/count):
+                    continue
+                
+                #train
+                self._train_one_step(idx)
         
     def _train_one_step(self,idx):
         '''
@@ -149,11 +159,6 @@ class cbow(object):
         activeidx = []
         sampidx = []
         wordid = self.data[idx]
-        
-        #probabilistically discard common words
-        count = self.most_common[wordid][1]
-        if np.random.rand() < np.sqrt(0.00005/count):
-            return
         
         #get neighboring words
         for j in range(-self.sw,self.sw+1):
