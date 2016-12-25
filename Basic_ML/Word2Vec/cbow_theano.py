@@ -30,9 +30,9 @@ class cbow(object):
         length of embedding vector for each vectorized word
       - skip_window: int (default 5)
         number of words to left and right of target word to consider
-      - learning_rate: float (default 1.0)
+      - learning_rate: float (default 0.1)
         learning rate used for gradient descent
-      - negative_sampling: float (default 50)
+      - negative_sampling: float (default 25)
         number of words to use for negative sampling
         
     methods:
