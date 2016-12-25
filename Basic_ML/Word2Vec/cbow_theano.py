@@ -216,7 +216,7 @@ class cbow(object):
             ax.annotate(self.ids2word[id+1], (embeddings[id,0],embeddings[id,1]))
         
         #save to disk
-        plt.savefig('cbow.png')
+        plt.savefig('plot.png')
             
     def get_embedding(self,word):
         '''
