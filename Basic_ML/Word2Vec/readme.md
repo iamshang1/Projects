@@ -7,7 +7,8 @@ in the same context will have similar embeddings, while words that seldomly appe
 context will have very different embeddings.
 
 The gensim Python module is used to perform Word2Vec. In addition, a custom Theano implementation was
-also tested, which had comparable performance but took significantly longer to train.
+also tested, which had comparable performance but took significantly longer to train. Both models use
+the continuous-bag-of-words implementation of Word2Vec.
 
 ### Predicted Topics
 
