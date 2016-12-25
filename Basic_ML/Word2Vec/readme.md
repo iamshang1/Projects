@@ -20,4 +20,4 @@ are located close to each other.
 ![plot](https://github.com/iamshang1/Projects/blob/master/Basic_ML/Word2Vec/plot_gensim.png)
 
 **Theano Embeddings**
-![plot](https://github.com/iamshang1/Projects/blob/master/Basic_ML/Word2Vec/plot_gensim.png)
+![plot](https://github.com/iamshang1/Projects/blob/master/Basic_ML/Word2Vec/plot_theano.png)
