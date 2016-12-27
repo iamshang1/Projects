@@ -205,7 +205,7 @@ class cbow(object):
         for id in range(words):
         
             #skip id 0 since it represents all unknown words
-            embeddings[id,:] = self.w2.get_value()[:,id+1]
+            embeddings[id,:] = self.w1.get_value()[id+1,:] + self.w2.get_value()[:,id+1]
             
         #reduce embeddings to 2d using tsne
         tsne = TSNE(perplexity=30, n_components=2, init='pca', n_iter=7500)
@@ -237,7 +237,7 @@ class cbow(object):
             id = self.word2ids[word]
         else:
             raise Exception('word must be string or id')
-        return self.w1.get_value()[:,id]
+        return self.w1.get_value()[id,:] + self.w2.get_value()[:,id]
 
 #build and train model        
 cbow = cbow(dataset)
