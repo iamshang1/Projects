@@ -175,6 +175,8 @@ class cbow(object):
         sampidx.append(wordid)
         
         #include random additional words in negative sampling
+        #note: a better implementation would probabilistically choose negative words based on
+        #P(w)^(3/4) where P(w) is the probability of selecting that word from the corpus
         numbers = range(self.ds)
         np.random.shuffle(numbers)
         numbers = numbers[:self.ns]
