@@ -22,6 +22,7 @@ Activation Functions
    Rectified Linear Units
       Leaky RLUs
    Exponential Linear Units
+   maxout
    softmax
 
 Cost Functions
