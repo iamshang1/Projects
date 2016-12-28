@@ -14,16 +14,20 @@
    Hopfield Nets and Restricted Boltzmann Machines
    Sigmoid Belief Nets and Deep Belief Nets
    Autoencoders
+   Word2vec
 
 Activation Functions
    tanh
    sigmoid
    Rectified Linear Units
+      Leaky RLUs
+   Exponential Linear Units
    softmax
 
 Cost Functions
    squared error
    cross entropy
+   max margin
    
 Gradient Descent
    stochastic
@@ -66,10 +70,11 @@ Preventing Overfitting
    
 Optimization Tricks
    Input Feature Mean/Std Normalization
-   Random Weight Initialization Based on Fan-In/Fan-Out
+   Xavier Weight Initialization Based on Fan-In/Fan-Out
    Orthogonal Weight Initialization
    Batch Normalization
    Residual Deep Learning
+   Stochastic Depth Networks
    Competitive Normalization and Max Pooling for Convolutional NN
    Gradient Clipping for Recurrent NN
    Generatively pre-train deep nets using RBM layers
@@ -82,5 +87,9 @@ Other Applications
 NN Libraries and Tools
    theano
    tensorflow
-   ms cntk
-   ms cognitive services
+   microsoft cntk
+   microsoft cognitive services
+   lasagne
+   keras
+   caffe
+   mxnet
