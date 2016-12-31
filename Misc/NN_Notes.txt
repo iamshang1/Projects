@@ -87,10 +87,11 @@ Other Applications
 
 NN Libraries and Tools
    theano
+      lasagne
+      keras
    tensorflow
    microsoft cntk
    microsoft cognitive services
-   lasagne
-   keras
    caffe
+   torch
    mxnet
