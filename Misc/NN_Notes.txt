@@ -14,7 +14,7 @@
    Deep Belief Nets
    Autoencoders
    Word2vec
-   Memory Networks
+   Dynamic Memory Networks
    Deep Reinforcement Learning
    Generative Adversarial Networks
 
