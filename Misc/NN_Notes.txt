@@ -10,15 +10,16 @@
       Matrix Vector Recursive Neural Netowrk
       Recursive Neural Tensor Network
    Convolutional
-   Mixture Models w/ Manager and Experts
-   Hopfield Nets and Restricted Boltzmann Machines
-   Sigmoid Belief Nets and Deep Belief Nets
+   Restricted Boltzmann Machines
+   Deep Belief Nets
    Autoencoders
    Word2vec
+   Deep Reinforcement Learning
+   Generative Adversarial Networks
 
 Activation Functions
-   tanh
    sigmoid
+   tanh
    Rectified Linear Units
       Leaky RLUs
    Exponential Linear Units
