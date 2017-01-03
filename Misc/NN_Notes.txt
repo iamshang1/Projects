@@ -59,7 +59,7 @@ Preventing Overfitting
    Use a Simpler Model
    Early Stopping based on Validation Set Accuracy
    LaGrange Constraints on Input Weight Vector Length per Node
-   L1/L2 Regulazation
+   L1/L2 Regularization
    Add Gaussian Noise to Intpus or Weights
    Stochastic Binary Activation Units with Regular Sigmoid Backprop
    Maximum A Posterior (Bayesian) Weight Decay
