@@ -57,4 +57,4 @@ The following are examples of generated text segments after X training iteration
  - 100000 iterations: said the old man who was a kind of paper of the universe he said i think i was a kind of thing to do it said ford with a shrug and then a bit of the universe i dont
  - 220000 iterations: at the same in the universe he said and i think i was a lot of this and i was going to do it said arthur i dont know said arthur i was a sort of thing that you were
  
- Additional training iterations may yield additional improvements in grammar and semantics, but training was stopped for the sake of time.
+Additional training iterations may yield additional improvements in grammar and semantics, but training was stopped for the sake of time.
