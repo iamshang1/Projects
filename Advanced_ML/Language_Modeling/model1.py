@@ -7,17 +7,25 @@ except:
     import pickle
 import sys
 
+#list for converting index to character
 dic = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',\
     'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',\
     '1','2','3','4','5','6','7','8','9','0','-','.',',','!','?','(',')','\'','"',' ']
 
+#load preprocessed numpy array
 text = np.load('hhgttg.npy')
+
+#characters to process per iteration
 batch = 160
 
+#increase recursion limit for lstm
 sys.setrecursionlimit(10000)
 
+#lstm class
 class lstm(object):
     def __init__(self):
+    
+        #nn architecture
         self.input = T.matrix()
         self.Wi = theano.shared(self.ortho_weight(256)[:72,:])
         self.Wf = theano.shared(self.ortho_weight(256)[:72,:])
@@ -37,6 +45,7 @@ class lstm(object):
         self.b2 = theano.shared(np.asarray(np.random.uniform(low=-0.1,high=0.1,size=(72)),dtype=theano.config.floatX))
         self.target = T.matrix()
         
+        #nn functions
         self.params = [self.Wi,self.Wf,self.Wc,self.Wo,self.Ui,self.Uf,self.Uc,self.Uo,self.bi,self.bf,self.bc,self.bo,self.h0,self.C0,self.W2,self.b2]
         [self.c,self.h_output],_ = theano.scan(fn=self.step,sequences=self.input,outputs_info=[self.C0,self.h0],non_sequences=self.params[:-4])
         self.output =  T.nnet.softmax(T.dot(self.h_output,self.W2)+self.b2)[40:,:]
@@ -46,6 +55,9 @@ class lstm(object):
         self.predict = theano.function([self.input],self.output,allow_input_downcast=True)
 
     def step(self,input,h0,C0,Wi,Wf,Wc,Wo,Ui,Uf,Uc,Uo,bi,bf,bc,bo):
+        '''
+        lstm memory cell functions
+        '''
         i = T.nnet.sigmoid(T.dot(input,Wi)+T.dot(h0,Ui)+bi)
         cand = T.tanh(T.dot(input,Wc)+T.dot(h0,Uc)+bc)
         f = T.nnet.sigmoid(T.dot(input,Wf)+T.dot(h0,Uf)+bf)
@@ -55,12 +67,18 @@ class lstm(object):
         return c,h
 
     def ortho_weight(self,ndim):
+        '''
+        orthogonal weight initialiation
+        '''
         bound = np.sqrt(1./ndim)
         W = np.random.randn(ndim, ndim)*bound
         u, s, v = np.linalg.svd(W)
         return u.astype(theano.config.floatX)
 
     def adam(self, cost, params, lr=0.0002, b1=0.1, b2=0.01, e=1e-8):
+        '''
+        adam gradient descent updates
+        '''
         updates = []
         grads = T.grad(cost, params)
         self.i = theano.shared(np.float32(0.))
@@ -81,12 +99,14 @@ class lstm(object):
         updates.append((self.i, i_t))
         return updates
 
+#open previous lowest training cost if it exists
 try:
     with open("nn_cost.dat","rb") as c:
         min_cost = float(c.readline())
 except:
     min_cost = 1000
 
+#open previous saved lstm if it exists
 try:
     with open("nn.dat","rb") as pickle_nn:
         NN = pickle.load(pickle_nn)
@@ -97,14 +117,20 @@ except:
     with open("nn.dat","wb") as f:
         pickle.dump(NN,f,pickle.HIGHEST_PROTOCOL)
 
-#train
+#save all generated text to file for archiving
 generated = open('generated.txt','w')
+
+#train lstm
 for i in range(1000000):
+
+    #select random starting point in text
     start = np.random.randint(40,text.shape[0]-batch-1)
     X_train = text[start-40:start+batch,:]
     y_train = text[start+1:start+1+batch,:]
     cost = NN.train(X_train,y_train)
     print "step %i training error:" % (i+1), cost
+    
+    #try generating text every 500 iterations
     if (i+1) % 500 == 0:
         string = ""
         start = np.random.randint(text.shape[0]-41)
@@ -123,6 +149,10 @@ for i in range(1000000):
             out = NN.predict(X_test)
         print string
         generated.write((str(i+1)+": "+string+"\n"))
+        
+        #checkpoint
+        #save lstm if current checkpoint cost is lower than previous checkpoint cost
+        #else load previous saved lstm
         if cost < min_cost:
             print "pickling neural network"
             min_cost = cost
@@ -140,4 +170,5 @@ for i in range(1000000):
             print "reloading last good NN"
             with open("nn.dat","rb") as pickle_nn:
                 NN = pickle.load(pickle_nn)
+                
 generated.close()

@@ -25,8 +25,8 @@
 - [Finding Dory in Movie Stills] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Finding_Dory)
 - [Human Activity Recognition] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Human_Activity_Recognition)
 - [Image Classification on CIFAR-10] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Image_Classification)
+- [Using LSTMs to create a Language Model of Hitchhiker's Guide to the Galaxy] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Language_Modeling)
 - [Automated Neuron Detection in Calcium Imaging Data] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Neuron_Detection)
-- [Using LSTMs to create a Language Model of Hitchhiker's Guide to the Galaxy] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Text_Generation)
 
 ###Distributed ML Exercises
 - [Multi-GPU Image Classification in TensorFlow] (https://github.com/iamshang1/Projects/tree/master/Distributed_ML/Image_Recognition)

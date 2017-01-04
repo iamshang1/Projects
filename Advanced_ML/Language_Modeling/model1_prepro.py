@@ -1,11 +1,18 @@
+'''
+character to vec preprocessor
+'''
+
 import numpy as np
 import sys
 
+#open text
 with open('hhgttg.txt','r') as f:
     text = f.read()
 
+#remove linebreaks
 text = text.replace("\n"," ")
-    
+
+#char to int mappings    
 dic = {
     'a':0,
     'b':1,
@@ -80,20 +87,25 @@ dic = {
     '"':70,
     ' ':71,
     }
-    
+
+#empty containers
 vec = np.empty((0,72))
 prevchar = None
-i = 0
 vecs = []
 
-for char in text:
-    i += 1
+#convert text to numpy array of character indices
+for i, char in enumerate(text, start=1):
     sys.stdout.write("Progress: %i of %i  \r" % (i,len(text)))
     sys.stdout.flush()
+    
+    #save then reset numpy array every 10k characters for speed
     if i % 10000 == 0:
         vecs.append(np.copy(vec))
         vec = np.empty((0,72))
+    
+    #convert current char to int, append to numpy array
     try:
+        #ignore duplicate spaces
         if prevchar == " " and char == " ":
             prevchar = char
             continue
@@ -104,12 +116,13 @@ for char in text:
     except:
         prevchar = char
 
+#concat all saved numpy arrays
 vec = np.empty((0,72))
-i = 0
-for v in vecs:
+for i, v in enumerate(vecs, start=1):
     i += 1
     sys.stdout.write("Concatenating text: %i of %i  \r" % (i,len(vecs)))
     sys.stdout.flush()
     vec = np.vstack((vec,v))
 
+#save to disk
 np.save('hhgttg.npy',vec)
