@@ -74,7 +74,7 @@ Preventing Overfitting
 Optimization Tricks
    Input Feature Mean/Std Normalization
    Xavier Weight Initialization Based on Fan-In/Fan-Out
-   Orthogonal Weight Initialization
+   Orthogonal Weight Initialization or Identity Matrix Initialization
    Batch Normalization
    Residual Deep Learning
    Stochastic Depth Networks
