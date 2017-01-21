@@ -12,20 +12,17 @@ corpus = []
 classes = []
 for file in glob.glob(os.path.join('shakespeare/comedy/', '*.txt')):
     with open(file,'r') as f:
-        text = f.read()
-        text.replace("\n"," ")
+        text = f.read().replace("\n"," ").lower()
         corpus.append(text)
         classes.append(0)
 for file in glob.glob(os.path.join('shakespeare/history/', '*.txt')):
     with open(file,'r') as f:
-        text = f.read()
-        text.replace("\n"," ")
+        text = f.read().replace("\n"," ").lower()
         corpus.append(text)
         classes.append(1)
 for file in glob.glob(os.path.join('shakespeare/tragedy/', '*.txt')):
     with open(file,'r') as f:
-        text = f.read()
-        text.replace("\n"," ")
+        text = f.read().replace("\n"," ").lower()
         corpus.append(text)
         classes.append(2)
 
