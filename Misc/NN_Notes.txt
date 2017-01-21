@@ -13,7 +13,7 @@
    Restricted Boltzmann Machines
    Deep Belief Nets
    Autoencoders
-   Word2vec
+   Word2vec, Doc2Vec
    Dynamic Memory Networks
    Deep Reinforcement Learning
    Generative Adversarial Networks
@@ -79,6 +79,9 @@ Optimization Tricks
    Residual Deep Learning
    Stochastic Depth Networks
    Competitive Normalization and Max Pooling for Convolutional NN
+   Word Vector Initialization for NLP Applications
+      Update Word Vector Weights during Gradient Descent
+      2 Channel W2V Initialization - one updated and one static
    Gradient Clipping for Recurrent NN
    Generatively pre-train deep nets using RBM layers
    Distributed Computing and GPU Optimization
