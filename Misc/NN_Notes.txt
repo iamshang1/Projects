@@ -6,17 +6,19 @@
       Long Short Term Memory
       Echo State Networks
       Bi-Directional RNN
+      Dynamic Memory Networks
    Recursive
-      Matrix Vector Recursive Neural Netowrk
       Recursive Neural Tensor Network
+      Recursive LSTMs
    Convolutional
    Restricted Boltzmann Machines
-   Deep Belief Nets
-   Autoencoders
+      Deep Belief Nets
+      Autoencoders
+      Variational Autoencoders
    Word2vec, Doc2Vec
-   Dynamic Memory Networks
    Deep Reinforcement Learning
    Generative Adversarial Networks
+   Ladder Networks (Semi-supervised Learning)
 
 Activation Functions
    sigmoid
