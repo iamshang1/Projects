@@ -1,7 +1,7 @@
 #Convolutional Variational Autoencoders
 Traiditional autoencoders take a high dimensional input and try to encode that
 information into a lower-dimensional embedding with miniminal information loss. This
-is achieved using a symmetrical funnel-shaped neural network -- the input and output layers have 
+is achieved using a symmetrical hourglass-shaped neural network -- the input and output layers have 
 the same number of neurons, while layers closer to the middle of the network have
 fewer neurons. The middle layer of the neural network represents the lower-dimension embedding for
 the input data. When training the autoencoder, the goal of the network is to minimize the difference between
