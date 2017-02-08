@@ -57,6 +57,8 @@ class conv_variational_autoencoder(object):
         load model weights from a file
       - return_embeddings(data)
         return the embeddings for given data
+      - generate(embedding)
+        return a generated output given a latent embedding
     '''
 
     def __init__(self,image_size,channels,conv_layers,feature_maps,filter_shapes,
