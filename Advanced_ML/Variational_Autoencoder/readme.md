@@ -1,5 +1,5 @@
 #Convolutional Variational Autoencoders
-Traiditional autoencoders take a high dimensional input and try to create encode that
+Traiditional autoencoders take a high dimensional input and try to encode that
 information into a lower-dimensional embedding with miniminal information loss. This
 is achieved using a symmetrical funnel-shaped neural network -- the input and output layers have 
 the same number of neurons, while layers closer to the middle of the network have
@@ -15,7 +15,8 @@ be used to generate new artificial examples.
 
 This exercise creates convolutional variational autoencoder that can be used on
 images and other 2d representations of data. We ran our autoencoder on the MNIST dataset and
-embedded the original 784-dimension representation of each digits into a 2-dimensional latent space.
+embedded the original 784-dimension representation of each digit into a 2-dimensional embedding space.
+The latent embedding space is then used to generate synthetic examples of digits.
 
 ##Results
 The following image represents the 2-D latent space of the MNIST dataset. Each digit is colored
