@@ -4,6 +4,7 @@ character to vec preprocessor
 
 import numpy as np
 import sys
+import re
 
 #open text
 with open('hhgttg.txt','r') as f:
@@ -11,6 +12,9 @@ with open('hhgttg.txt','r') as f:
 
 #remove linebreaks
 text = text.replace("\n"," ")
+
+#remove duplicate spaces
+text = re.sub(' +',' ',text)
 
 #char to int mappings    
 dic = {
@@ -98,31 +102,13 @@ for i, char in enumerate(text, start=1):
     sys.stdout.write("Progress: %i of %i  \r" % (i,len(text)))
     sys.stdout.flush()
     
-    #save then reset numpy array every 10k characters for speed
-    if i % 10000 == 0:
-        vecs.append(np.copy(vec))
-        vec = np.empty((0,72))
-    
     #convert current char to int, append to numpy array
-    try:
-        #ignore duplicate spaces
-        if prevchar == " " and char == " ":
-            prevchar = char
-            continue
+    if char in dic:
         new = np.zeros((1,72))
         new[0,dic[char]] = 1
-        vec = np.vstack((vec,new))
-        prevchar = char
-    except:
-        prevchar = char
-
-#concat all saved numpy arrays
-vec = np.empty((0,72))
-for i, v in enumerate(vecs, start=1):
-    i += 1
-    sys.stdout.write("Concatenating text: %i of %i  \r" % (i,len(vecs)))
-    sys.stdout.flush()
-    vec = np.vstack((vec,v))
+        vecs.append(new)
+        
+vecs = np.array(vecs)
 
 #save to disk
-np.save('hhgttg.npy',vec)
+np.save('hhgttg.npy',vecs)
