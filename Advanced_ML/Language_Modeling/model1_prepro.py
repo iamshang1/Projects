@@ -104,11 +104,12 @@ for i, char in enumerate(text, start=1):
     
     #convert current char to int, append to numpy array
     if char in dic:
-        new = np.zeros((1,72))
-        new[0,dic[char]] = 1
+        new = np.zeros(72)
+        new[dic[char]] = 1
         vecs.append(new)
         
 vecs = np.array(vecs)
+print vecs.shape
 
 #save to disk
 np.save('hhgttg.npy',vecs)
