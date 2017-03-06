@@ -65,7 +65,7 @@ Our HAN achieved a test set accuracy of 69.19%
 First, download the Yelp reviews dataset from [https://www.yelp.com/dataset_challenge/dataset](https://www.yelp.com/dataset_challenge/dataset)
 and extract the .json file. Then run the following:
 
- - feature_extraction.py /<path to Yelp json/>
+ - feature_extraction.py \<path to Yelp json\>
  - naive_bayes.py
  - xg-boost.py
  - th_cnn.py
