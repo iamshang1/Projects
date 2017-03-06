@@ -57,8 +57,8 @@ outputs a weighted document embedding based on the sentences in the document tha
 are most relevant to the classification. This final document embedding is then
 fed into a softmax classifier.
 
-For our exercise, we use the same gensim vectors used for the CNN. Our HAN model
-uses 50 LSTM units per heirarchy layer and an attention embedding size of 100. 
+For our exercise, we start with the same gensim word embeddings used for the CNN. Our HAN model
+uses 50 LSTM units per heirarchy layer and an attention embedding size of 100.
 Our HAN achieved a test set accuracy of 69.19%
 
 ##Instructions to Run Models
