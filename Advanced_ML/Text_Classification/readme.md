@@ -42,7 +42,8 @@ layer is then fed into a softmax classifier.
 
 For our exercise, we use gensim's word2vec to create 200-dimension word embeddings
 for the dataset. We use a three-word, four-word, and five-word window, each with
-100 feature maps. Our CNN achieved a test set accuracy of 60.15%.
+100 feature maps, and applied 50% dropout to the softmax layer to reduce overfitting.
+Our CNN achieved a test set accuracy of 60.15%.
 
 ##Heirarchical Attention Networks
 A heirarchical attention network ([http://www.aclweb.org/anthology/N16-1174](http://www.aclweb.org/anthology/N16-1174)) 
