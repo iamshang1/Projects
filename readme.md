@@ -27,6 +27,7 @@
 - [Image Classification on CIFAR-10] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Image_Classification)
 - [Using LSTMs to create a Language Model of Hitchhiker's Guide to the Galaxy] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Language_Modeling)
 - [Automated Neuron Detection in Calcium Imaging Data] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Neuron_Detection)
+- [Deep Learning for Text Classification] (https://github.com/iamshang1/Projects/tree/master/Text_Classification)
 - [Using Variational Autoencoders to Visualize Latent Space] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Variational_Autoencoder)
 
 ###Distributed ML Exercises
