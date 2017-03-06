@@ -11,10 +11,11 @@ which yields approximately 470,000 documents. The goal of the classifiers is to
 predict the number of stars for a review based on the text from the review.
 
 ##Naive Bayes
-Naive bayes is a traditional machine learning classifier commonly used for text
-classification. Naive bayes first uses a training corpus to find the probability
-of each word or phrase belonging to each class. It then uses these probabilities
-to predict the class for a new document.
+Naive Bayes is a traditional machine learning classifier commonly used for text
+classification. Naive Bayes first uses a training corpus to find the probability
+of each word or phrase belonging to each class. For a new document, Naive Bayes multiplies
+(or log sums) the precalculated probabilities of every word in the document and chooses
+the class with the highest probability.
 
 For our exercise, we removed punctuation and stop words and then applied TFIDF
 vectorization on the resulting unigrams and bigrams. The TFIDF features were then
