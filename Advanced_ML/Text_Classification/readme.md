@@ -47,7 +47,7 @@ Our CNN achieved a test set accuracy of 60.15%.
 
 ##Heirarchical Attention Networks
 A heirarchical attention network ([http://www.aclweb.org/anthology/N16-1174](http://www.aclweb.org/anthology/N16-1174)) 
-is a deep learning model composed of bidirectional LSTMs/GRUs with attention
+is a deep learning model composed of hiearchies of bidirectional LSTMs/GRUs with attention
 mechanisms. The model has two "heirarchies". The lower heirarchy takes in one
 sentence at a time, broken into word embeddings. This heirarchy outputs a
 weighted sentence embedding based on the words in the sentence that are most 
