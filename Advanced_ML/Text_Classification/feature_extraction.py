@@ -128,7 +128,7 @@ for key,val in model.vocab.iteritems():
     
 #normalize embeddings
 vocab -= vocab.mean()
-vocab /= (vocab.std()*2)
+vocab /= vocab.std()
 
 #reset first row to 0
 vocab[0,:] = np.zeros((embedding_size))
