@@ -1,4 +1,5 @@
 #Deep Learning for Text Classification
+
 This exercise compares the effectiveness of different deep learning models
 for text classification with traditional machine learning text classifiers.
 We compare the performance of Naive Bayes, XGBoost, Convolutional Neural
@@ -11,6 +12,7 @@ which yields approximately 470,000 documents. The goal of the classifiers is to
 predict the number of stars for a review based on the text from the review.
 
 ##Naive Bayes
+
 Naive Bayes is a traditional machine learning classifier commonly used for text
 classification. Naive Bayes first uses a training corpus to find the probability
 of each word or phrase belonging to each class. For a new document, Naive Bayes multiplies
@@ -22,6 +24,7 @@ vectorization on the resulting unigrams and bigrams. The TFIDF features were the
 fed into the classifier. Naive bayes achieved a test set accuracy of 50.68%.
 
 ##XGBoost
+
 XGBoost is an extremely powerful machine learning method based on gradient-boosted
 trees. In XGBoost, additional decision trees are added to the model with each
 new decision tree fitting to the residuals of the sum of all previous decision
@@ -32,6 +35,7 @@ For our exercise, we used the same feature set as Naive Bayes. We ran XGBoost wi
 a max depth of 5 and 300 estimators. XGBoost achieved a test set accuracy of 57.36%.
 
 ##Convolutional Neural Networks
+
 Convolutional neural networks are traditionally used for image recognition but
 have been adapted for text classification. First, words are converted to embedding
 vectors using Word2Vec. These are fed into the CNN as features. The CNN uses a single
@@ -46,6 +50,7 @@ for the dataset. We use a three-word, four-word, and five-word window, each with
 Our CNN achieved a test set accuracy of 60.15%.
 
 ##Hierarchical Attention Networks
+
 A hierarchical attention network ([http://www.aclweb.org/anthology/N16-1174](http://www.aclweb.org/anthology/N16-1174)) 
 is a deep learning model composed of hierarchies of bidirectional LSTMs/GRUs with attention
 mechanisms. The model has two "hierarchies". The lower hierarchy takes in one
@@ -62,6 +67,7 @@ uses 50 LSTM units per hierarchy layer and an attention embedding size of 100.
 Our HAN achieved a test set accuracy of 69.19%
 
 ##Instructions to Run Models
+
 First, download the Yelp reviews dataset from [https://www.yelp.com/dataset_challenge/dataset](https://www.yelp.com/dataset_challenge/dataset)
 and extract the .json file. Then run the following:
 
