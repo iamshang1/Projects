@@ -1,4 +1,4 @@
-#Deep Learning for Text Classification
+# Deep Learning for Text Classification
 
 This exercise compares the effectiveness of different deep learning models
 for text classification with traditional machine learning text classifiers.
@@ -11,7 +11,7 @@ To reduce the size of the dataset (and therefore training time), we only use rev
 which yields approximately 470,000 documents. The goal of the classifiers is to 
 predict the number of stars for a review based on the text from the review.
 
-##Naive Bayes
+## Naive Bayes
 
 Naive Bayes is a traditional machine learning classifier commonly used for text
 classification. Naive Bayes first uses a training corpus to find the probability
@@ -23,7 +23,7 @@ For our exercise, we removed punctuation and stop words and then applied TFIDF
 vectorization on the resulting unigrams and bigrams. The TFIDF features were then
 fed into the classifier. Naive bayes achieved a test set accuracy of 50.68%.
 
-##XGBoost
+## XGBoost
 
 XGBoost is an extremely powerful machine learning method based on gradient-boosted
 trees. In XGBoost, additional decision trees are added to the model with each
@@ -34,7 +34,7 @@ used to win many Kaggle competitions.
 For our exercise, we used the same feature set as Naive Bayes. We ran XGBoost with
 a max depth of 5 and 300 estimators. XGBoost achieved a test set accuracy of 57.36%.
 
-##Convolutional Neural Networks
+## Convolutional Neural Networks
 
 Convolutional neural networks are traditionally used for image recognition but
 have been adapted for text classification. First, words are converted to embedding
@@ -49,7 +49,7 @@ for the dataset. We use a three-word, four-word, and five-word window, each with
 100 feature maps, and applied 50% dropout to the softmax layer to reduce overfitting.
 Our CNN achieved a test set accuracy of 60.15%.
 
-##Hierarchical Attention Networks
+## Hierarchical Attention Networks
 
 A hierarchical attention network ([http://www.aclweb.org/anthology/N16-1174](http://www.aclweb.org/anthology/N16-1174)) 
 is a deep learning model composed of hierarchies of bidirectional LSTMs/GRUs with attention
@@ -66,7 +66,7 @@ For our exercise, we start with the same gensim word embeddings used for the CNN
 uses 50 LSTM units per hierarchy layer and an attention embedding size of 100.
 Our HAN achieved a test set accuracy of 69.19%
 
-##Instructions to Run Models
+## Instructions to Run Models
 
 First, download the Yelp reviews dataset from [https://www.yelp.com/dataset_challenge/dataset](https://www.yelp.com/dataset_challenge/dataset)
 and extract the .json file. Then run the following:
