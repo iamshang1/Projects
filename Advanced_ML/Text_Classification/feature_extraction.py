@@ -117,11 +117,11 @@ plt.show()
 '''
 #save all word embeddings to matrix
 print "saving word vectors to matrix"
-vocab = np.zeros((len(model.vocab)+1,embedding_size))
+vocab = np.zeros((len(model.wv.vocab)+1,embedding_size))
 word2id = {}
 
 #first row of embedding matrix isn't used so that 0 can be masked
-for key,val in model.vocab.iteritems():
+for key,val in model.wv.vocab.iteritems():
     idx = val.__dict__['index'] + 1
     vocab[idx,:] = model[key]
     word2id[key] = idx
