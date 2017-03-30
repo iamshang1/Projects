@@ -1,4 +1,4 @@
-#Convolutional Variational Autoencoders
+# Convolutional Variational Autoencoders
 Traditional autoencoders take a high dimensional input and try to encode that
 information into a lower-dimensional embedding with miniminal information loss. This
 is achieved using a symmetrical hourglass-shaped neural network -- the input and output layers have 
@@ -18,7 +18,7 @@ images and other 2d representations of data. We ran our autoencoder on the MNIST
 embedded the original 784-dimension representation of each digit into a 2-dimensional embedding space.
 The latent embedding space is then used to generate synthetic examples of digits.
 
-##Results
+## Results
 The following image represents the 2-D latent space of the MNIST dataset. Each digit is colored
 differently.
 
