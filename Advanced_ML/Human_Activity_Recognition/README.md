@@ -1,6 +1,6 @@
-#Human Activity Recognition
+# Human Activity Recognition
 
-##Overview
+## Overview
 Human activity recognition is a type of classification problem that involves attaching 
 monitoring devices (e.g. accelerometers, heart rate monitors) to a person while that 
 person is performing different activities. This study compares the performance of different
@@ -8,7 +8,7 @@ classiﬁers on a human activity recognition dataset.
 
 For an in-depth write up of this project, see [paper.pdf](https://github.com/iamshang1/Projects/blob/master/Advanced_ML/Human_Activity_Recognition/Paper.pdf).
 
-##Files
+## Files
 The following scripts are used for this project:
 
  - preprocessing.py - separate the raw accelerometer data by subject and activity
@@ -29,7 +29,7 @@ The following scripts are used for this project:
 Note that the dataset used for this project is not publically available. For queries regarding
 this dataset, contact Frederick Maier at fmaier@uga.edu.
 
-##Feature Engineering
+## Feature Engineering
 Many of the classifiers used in this study are unable to take in the raw accelerometer data directly
 as input features. Therefore, we had to hand-engineer features from the raw data to feed into our classifiers.
 
@@ -53,7 +53,7 @@ The following normalized demographic data was also included as input features:
 The summary statistics and demographic data was concatenated to form 109 input features that could
 be fed directly into a classifier.
 
-##Models
+## Models
 In our study we tested the performance of the following four classifiers:
 
  - Random Forests
@@ -74,7 +74,7 @@ splitting. This yields a total of four test accuracies per model:
 
 For additional information about these models, see [paper.pdf](https://github.com/iamshang1/Projects/blob/master/Advanced_ML/Human_Activity_Recognition/Paper.pdf).
  
-##Results
+## Results
 XGBoost had the best performance across all categories of evaluation. LSTMs performed well
 in within-subject test/train splitting, doing only slightly worse than XGBoost, but overfit
 in between-subject test/train splitting even with simplified models. Convolutional-LSTMs
@@ -84,7 +84,7 @@ arguably the most difficult classification in this experiment.
 
 ![results](https://github.com/iamshang1/Projects/blob/master/Advanced_ML/Human_Activity_Recognition/results.png)
 
-##Instructions to Run Models
+## Instructions to Run Models
 
 Before running any of the models, run the following commands to preprocess the dataset:
 

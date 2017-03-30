@@ -1,4 +1,4 @@
-#Sentiment Analysis
+# Sentiment Analysis
 
 This exercise utilizes SentiWordNet and Naive Bayes to classify text reviews into positive and negative sentiment
 classes. The Amazon Fine Food Reviews dataset from Kaggle is used for this exercise. This dataset

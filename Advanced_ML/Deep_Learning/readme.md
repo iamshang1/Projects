@@ -1,4 +1,4 @@
-##Comparing Deep Learning Training Methodologies
+## Comparing Deep Learning Training Methodologies
 
 The vanishing gradient problem makes it difficult to train deep neural networks with many layers,
 but recent advances in training methodologies have mitigated the issues caused by vanishing gradients.

@@ -1,4 +1,4 @@
-#Word2Vec
+# Word2Vec
 
 This exercise applies Word2Vec on the 20 newsgroups corpus to convert the 50k most common words into
 dense numerical vectors. Word2Vec is an unsupervised learning technique that converts words to a vector

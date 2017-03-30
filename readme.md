@@ -1,6 +1,6 @@
 # Shang's Machine Learning Portfolio
 
-###Basic ML Exercises
+### Basic ML Exercises
 - [Comparing Runtime and Performance of Different Classifiers] (https://github.com/iamshang1/Projects/tree/master/Basic_ML/Classifier_Comparison)
 - [Visualizing Document Similarity] (https://github.com/iamshang1/Projects/tree/master/Basic_ML/Document_Similarity)
 - [Exploratory Data Analysis on Forbes 2000 Dataset] (https://github.com/iamshang1/Projects/tree/master/Basic_ML/Exploratory_Data_Analysis)
@@ -20,7 +20,7 @@
 - [Topic Modeling of Forum Posts] (https://github.com/iamshang1/Projects/tree/master/Basic_ML/Topic_Modeling)
 - [Visualizing Word2Vec] (https://github.com/iamshang1/Projects/tree/master/Basic_ML/Word2Vec)
 
-###Advanced ML Exercises
+### Advanced ML Exercises
 - [Comparing Techniques to Improve Deep Learning Performance] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Deep_Learning)
 - [Finding Dory in Movie Stills] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Finding_Dory)
 - [Human Activity Recognition] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Human_Activity_Recognition)
@@ -30,7 +30,7 @@
 - [Deep Learning for Text Classification] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Text_Classification)
 - [Using Variational Autoencoders to Visualize Latent Space] (https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Variational_Autoencoder)
 
-###Distributed ML Exercises
+### Distributed ML Exercises
 - [Multi-GPU Image Classification in TensorFlow] (https://github.com/iamshang1/Projects/tree/master/Distributed_ML/Image_Recognition)
 - [Malware Classification on Apache Spark] (https://github.com/iamshang1/Projects/tree/master/Distributed_ML/Malware_Classification)
 - [Document Classification on Apache Spark] (https://github.com/iamshang1/Projects/tree/master/Distributed_ML/Text_Classification)

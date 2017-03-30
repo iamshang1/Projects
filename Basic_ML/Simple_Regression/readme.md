@@ -1,4 +1,4 @@
-#Polyfit Regression
+# Polyfit Regression
 
 This exercise attempts to extrapolate website views using different degrees of polynomial regression
 on previous web traffic data.

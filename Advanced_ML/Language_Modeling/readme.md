@@ -1,11 +1,11 @@
-#Language Modeling
+# Language Modeling
 
 This exercise uses a long short term memory recurrent network to learn a language model of a corpus and then generate new 
 plausible text segments based on patterns from that corpus. For this exercise, Douglas Adams' Hitchhiker's Guide to the Galaxy
 series is used as the text corpus for training. Two separate LSTM models are tested--the first model is a character-level model
 and the second model is a word-level model.
 
-##Model 1 - Character Level LSTM
+## Model 1 - Character Level LSTM
 
 The first LSTM model is fed a string of characters and asked to predict the following character. This reduces the input and 
 output vectors from over 10,000 words to only 72 characters.
@@ -20,7 +20,7 @@ Below are details about how the LSTM Recurrent Net is implemented:
  - Mini-batch training using 200-character segments per training iteration
  - For each mini-batch, the network receives 40 characters before it is asked to predict the following character
 
-##Model 1 Results
+## Model 1 Results
 
 The following are examples of generated text segments after X training iterations:
 
@@ -33,7 +33,7 @@ The following are examples of generated text segments after X training iteration
  
 Additional training iterations may yield additional improvements in grammar and semantics, but training was stopped for the sake of time.
 
-##Model 2 - Word Level LSTM
+## Model 2 - Word Level LSTM
 
 The second LSTM model is fed an array of words converted into Word2Vec embeddings and then asked to predict the following word.
 
@@ -47,7 +47,7 @@ Below are details about how the LSTM Recurrent Net is implemented:
  - Mini-batch training using 120-word segments per training iteration
  - For each mini-batch, the network receives 20 word embeddings before it is asked to predict the following word
  
-##Model 2 Results
+## Model 2 Results
 
 The following are examples of generated text segments after X training iterations:
 

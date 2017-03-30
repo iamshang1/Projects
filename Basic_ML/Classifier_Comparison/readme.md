@@ -1,4 +1,4 @@
-#Digits Classifier Comparison
+# Digits Classifier Comparison
 
 This exercise compares the speed and accuracy of different classification algorithms on different datasets.
 
