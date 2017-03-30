@@ -1,6 +1,6 @@
-#Spark Text Classfication
+# Spark Text Classfication
 
-##Overview
+## Overview
 
 The following repository runs text classification on the Reuters news articles corpus using Naive Bayes
 classification and optionally Logistic Regression. Each article is classified into the one category that
@@ -18,9 +18,9 @@ The package includes the following scripts. These scripts have been designed to 
  - pipeline_nb_large.py - pipeline for predicting full dataset using naive bayes classifier
  - preprocessing.py - class definition for data preprocessor
 
-##Model Details
+## Model Details
 
-###Data Preprocessing
+### Data Preprocessing
 
 The following data preprocessing steps are applied to the raw input data. These steps are applied in the order listed:
 
@@ -33,13 +33,13 @@ The following data preprocessing steps are applied to the raw input data. These 
 
 The final numerical vector is used as the input to the naive bayes model.
 
-###Naive Bayes Model
+### Naive Bayes Model
 
 The Naive Bayes model uses standard Naive Bayes classification with Laplace (add one) smoothing and log probabilities for numerical
 stability. Because each article can have multiple labels, four separate Naive Bayes models are trained, one for each category.
 For each article, the category with the highest log probability sum of its input vector is chosen as the category for the article. 
  
-##Instructions for Running Naive Bayes Model
+## Instructions for Running Naive Bayes Model
 
 Flintrock was used to launch Amazon EC2 instances to run our program. The following arguments were used to launch Flintrock:
 
