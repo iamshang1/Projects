@@ -36,14 +36,14 @@ num_channels = 3
 num_labels = 10
 
 #layer initialization functions
-def conv_ortho_weights(chan_in,filter_h,filter_w,chan_out):
+def conv_ortho_weights(filter_h,filter_w,chan_in,chan_out):
     bound = np.sqrt(6./(chan_in*filter_h*filter_w + chan_out*filter_h*filter_w))
     W = np.random.random((chan_out, chan_in * filter_h * filter_w))
     u, s, v = np.linalg.svd(W,full_matrices=False)
     if u.shape[0] != u.shape[1]:
-        W = u.reshape((chan_in, filter_h, filter_w, chan_out))
+        W = u.reshape((filter_h, filter_w, chan_in, chan_out))
     else:
-        W = v.reshape((chan_in, filter_h, filter_w, chan_out))
+        W = v.reshape((filter_h, filter_w, chan_in, chan_out))
     return W.astype(np.float32)
 
 def dense_ortho_weights(fan_in,fan_out):
@@ -129,7 +129,7 @@ for i in xrange(num_gpus):
         l7.append(tf.nn.elu(tf.matmul(flattened[i], w7) + b7))
         drop.append(tf.nn.dropout(l7[i], kp2))
         lastLayer.append(tf.matmul(drop[i], w8) + b8)
-        loss.append(tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(lastLayer[i],tfy_split[i])))
+        loss.append(tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=lastLayer[i],labels=tfy_split[i])))
         grad.append(optimizer.compute_gradients(loss[i]))
 
 #function to average gradients, taken from tensorflow CIFAR-10 example
