@@ -7,6 +7,7 @@
         Echo State Networks
         Bi-Directional RNN
         Attention Mechanisms
+        Sequence to Sequence Models
         Dynamic Memory Networks
         Neural Turing Machines / External Memory
         Neural Programmers
@@ -90,7 +91,7 @@ Optimization Tricks
       Update Word Vector Weights during Gradient Descent
       2 Channel W2V Initialization - one updated and one static
    Gradient Clipping for Recurrent NN
-   Generatively pre-train deep nets using RBM layers
+   Generatively pre-train deep nets using autoencoding layers
    Distributed Computing and GPU Optimization
   
 Other Applications
