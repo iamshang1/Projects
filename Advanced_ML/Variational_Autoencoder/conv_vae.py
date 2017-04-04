@@ -7,7 +7,7 @@ https://github.com/fchollet/keras/blob/master/examples/variational_autoencoder.p
 
 import numpy as np
 from keras.layers import Input, Dense, Lambda, Flatten, Reshape, Dropout
-from keras.layers import Convolution2D, Deconvolution2D
+from keras.layers import Convolution2D, Conv2DTranspose
 from keras.models import Model
 from keras.optimizers import SGD, Adam, RMSprop, Adadelta
 from keras.callbacks import Callback, ModelCheckpoint
@@ -99,14 +99,13 @@ class conv_variational_autoencoder(object):
                     
         #define convolutional encoding layers
         self.encode_conv = []
-        layer = Convolution2D(feature_maps[0],filter_shapes[0][0],
-                filter_shapes[0][1],border_mode='same',activation=activation,
-                subsample=strides[0])(self.input)
+        layer = Convolution2D(feature_maps[0],filter_shapes[0],padding='same',
+                              activation=activation,strides=strides[0])(self.input)
         self.encode_conv.append(layer)
         for i in range(1,conv_layers):
-            layer = Convolution2D(feature_maps[i],filter_shapes[i][0],
-                    filter_shapes[i][1],border_mode='same',activation=activation,
-                    subsample=strides[i])(self.encode_conv[i-1])
+            layer = Convolution2D(feature_maps[i],filter_shapes[i],
+                                  padding='same',activation=activation,
+                                  strides=strides[i])(self.encode_conv[i-1])
             self.encode_conv.append(layer)
         
         #define dense encoding layers
@@ -168,15 +167,14 @@ class conv_variational_autoencoder(object):
             else:
                 conv_size[3] = feature_maps[-i]
             
-            layer = Deconvolution2D(feature_maps[-i-1],filter_shapes[-i][0],
-                    filter_shapes[-i][1],(None,)+tuple(conv_size[1:]),
-                    border_mode='same',activation=activation,subsample=strides[-i])
+            layer = Conv2DTranspose(feature_maps[-i-1],filter_shapes[-i],
+                                    padding='same',activation=activation,
+                                    strides=strides[-i])
             self.all_decoding.append(layer)
             self.decode_conv.append(layer(self.decode_conv[i-1]))
         
-        layer = Convolution2D(channels,filter_shapes[0][0],
-                filter_shapes[0][1],border_mode='same',activation='sigmoid',
-                subsample=strides[0])
+        layer = Conv2DTranspose(channels,filter_shapes[0],padding='same',
+                                activation='sigmoid',strides=strides[0])
         self.all_decoding.append(layer)
         self.output=layer(self.decode_conv[-1])
 
@@ -204,7 +202,7 @@ class conv_variational_autoencoder(object):
         '''
         z_mean,z_log_var = args
         epsilon = K.random_normal(shape=K.shape(z_mean),mean=self.eps_mean,
-                                  std=self.eps_std)
+                                  stddev=self.eps_std)
         return z_mean + K.exp(z_log_var) * epsilon
         
     def _vae_loss(self,input,output):
@@ -265,7 +263,7 @@ class conv_variational_autoencoder(object):
         if checkpoint:
             callbacks.append(ModelCheckpoint(filepath))
         
-        self.model.fit(data,data,batch_size,nb_epoch=epochs,shuffle=True,
+        self.model.fit(data,data,batch_size,epochs=epochs,shuffle=True,
                        validation_data=(data,data),callbacks=callbacks)
     
     def save(self,filepath):
@@ -397,4 +395,4 @@ if __name__ == "__main__":
     plt.figure(figsize=(10, 10))
     plt.imshow(figure, cmap='Greys_r')
     plt.savefig('generated_samples.png')
-    plt.show()
+plt.show()
