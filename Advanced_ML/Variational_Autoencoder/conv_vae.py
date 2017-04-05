@@ -84,7 +84,8 @@ class conv_variational_autoencoder(object):
         
         #even shaped filters may cause problems in theano backend
         even_filters = [f for pair in filter_shapes for f in pair if f % 2 == 0]
-        if K.image_dim_ordering() == 'th' and len(even_filters) > 0:
+        if (K.image_dim_ordering() == 'th' or K.image_dim_ordering() == 'channels_first') \
+                and len(even_filters) > 0:
             warnings.warn('Even shaped filters may cause problems in Theano backend')
         
         self.eps_mean = eps_mean
@@ -92,7 +93,7 @@ class conv_variational_autoencoder(object):
         self.image_size = image_size
         
         #define input layer
-        if K.image_dim_ordering() == 'th':
+        if K.image_dim_ordering() == 'th' or K.image_dim_ordering() == 'channels_first':
             self.input = Input(shape=(channels,image_size[0],image_size[1]))
         else:
             self.input = Input(shape=(image_size[0],image_size[1],channels))
@@ -140,7 +141,7 @@ class conv_variational_autoencoder(object):
         
         #dummy model to get image size after encoding convolutions
         self.decode_conv = []
-        if K.image_dim_ordering() == 'th':
+        if K.image_dim_ordering() == 'th' or K.image_dim_ordering() == 'channels_first':
             dummy_input = np.ones((1,channels,image_size[0],image_size[1]))
         else:
             dummy_input = np.ones((1,image_size[0],image_size[1],channels))
@@ -155,14 +156,14 @@ class conv_variational_autoencoder(object):
         
         #define deconvolutional decoding layers
         for i in range(1,conv_layers):
-            if K.image_dim_ordering() == 'th':
+            if K.image_dim_ordering() == 'th' or K.image_dim_ordering() == 'channels_first':
                 dummy_input = np.ones((1,channels,image_size[0],image_size[1]))
             else:
                 dummy_input = np.ones((1,image_size[0],image_size[1],channels))
             dummy = Model(self.input, self.encode_conv[-i-1])
             conv_size = list(dummy.predict(dummy_input).shape)
             
-            if K.image_dim_ordering() == 'th':
+            if K.image_dim_ordering() == 'th' or K.image_dim_ordering() == 'channels_first':
                 conv_size[1] = feature_maps[-i]
             else:
                 conv_size[3] = feature_maps[-i]
@@ -346,7 +347,7 @@ if __name__ == "__main__":
     x_test = x_test.astype('float32') / 255.
     
     #reshape to 4d tensors
-    if K.image_dim_ordering() == 'th':
+    if K.image_dim_ordering() == 'th' or K.image_dim_ordering() == 'channels_first':
         tensor_shape = (1,image_size[0],image_size[1])
     else:
         tensor_shape = (image_size[0],image_size[1],1)
