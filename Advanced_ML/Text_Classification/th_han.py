@@ -383,7 +383,7 @@ class hierarchical_attention_network(object):
         '''
         params_dic = {}
         for idx,param in enumerate(self.params):
-            params_dic[idx] = param
+            params_dic[idx] = param.get_value()
             
         with open(filename, 'wb') as f:
             pickle.dump(params_dic, f, protocol=pickle.HIGHEST_PROTOCOL)
@@ -403,7 +403,7 @@ class hierarchical_attention_network(object):
             params_dic = pickle.load(f)
 
         for idx,param in enumerate(self.params):
-            self.params[idx] = params_dic[idx]
+            self.params[idx].set_value(params_dic[idx])
             
 
 if __name__ == "__main__":
