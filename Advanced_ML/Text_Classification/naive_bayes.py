@@ -8,7 +8,7 @@ from sklearn.naive_bayes import MultinomialNB
 #load saved files
 print "loading data"
 vocab = np.load('embeddings.npy')
-with open('data.p', 'rb') as f:
+with open('data.pkl', 'rb') as f:
     data = pickle.load(f)
     
 #convert each doc into a string

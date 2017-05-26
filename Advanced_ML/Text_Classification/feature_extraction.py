@@ -157,5 +157,5 @@ for idx,doc in enumerate(tokens):
 #save preprocessed data and embeddings to disk
 print "\nsaving data to disk"
 np.save('embeddings',vocab)
-with open('data.p', 'wb') as f:
+with open('data.pkl', 'wb') as f:
     pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
