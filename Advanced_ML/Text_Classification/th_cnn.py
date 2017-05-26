@@ -4,7 +4,12 @@ import theano
 import theano.tensor as T
 from theano.tensor.nnet import conv2d
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
+from sklearn.decomposition import PCA
 import sys
+import collections
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 
 #convolutional network for text classification
 class text_cnn(object):
@@ -36,6 +41,8 @@ class text_cnn(object):
         save the model weights to a file
       - load(filepath)
         load model weights from a file
+      - plot_doc_embeddings(data,labels,fname,key=None)
+        visualize document embeddings created by network
     '''
     def __init__(self,embedding_matrix,num_classes,feature_maps=100,dropout_rate=0.5):
     
@@ -101,6 +108,7 @@ class text_cnn(object):
         self.train_f = theano.function([self.input,self.target,self.dropout_on],[self.output,self.cost],
                                        updates=self.updates,allow_input_downcast=True)
         self.predict_f = theano.function([self.input,self.dropout_on],self.output,allow_input_downcast=True)
+        self.docembeds = theano.function([self.input],self.flattened,allow_input_downcast=True)
 
     def _dropout_train(self,matrix,shape):
         '''
@@ -327,16 +335,70 @@ class text_cnn(object):
         for idx,param in enumerate(self.params):
             self.params[idx] = params_dic[idx]
             
+    def plot_doc_embeddings(self,data,labels,fname,key=None):
+        '''
+        visualize document embeddings created by network
+        
+        parameters:
+          - data: numpy array
+            3d numpy array (doc x sentence x word ids) of input data
+          - labels: numpy array
+            2d numpy array of one-hot-encoded labels
+          - fname: string
+            path to save doc embedding image
+          - key: list (optional)
+            list of strings representing name of each class
+        
+        outputs:
+            None
+        '''
+        embeds = []
+        labels = np.argmax(labels,1)
+        
+        #get document embeddings
+        for i,doc in enumerate(data):
+            sys.stdout.write("processing document %i of %i      \r"\
+                                 % (i+1,len(data)))
+            sys.stdout.flush()
+            doc_embed = self.docembeds(doc)
+            embeds.append(doc_embed.flatten())
+            
+        embeds = np.array(embeds)
+        
+        #reduce dimensionality
+        pca = PCA(n_components=2)
+        embeds = pca.fit_transform(embeds)
+        
+        #plot embeddings
+        colors = ['r','g','b','c','m','y','orange','k','grey']
+        for i in range(len(embeds)):
+            plt.scatter(embeds[i,0],embeds[i,1],s=25,c=colors[labels[i]])
+            
+        #add legend
+        if isinstance(key,collections.Iterable):
+            patches = []
+            for k in range(len(key)):
+                patches.append(mpatches.Patch(color=colors[k],label=key[k]))
+            plt.legend(handles=patches,loc='upper left',bbox_to_anchor=(1.0, 1.0))
+        plt.title("CNN Document Embeddings by Class")
+        plt.tick_params(axis='both',which='both',bottom='off',left='off',labelbottom='off',labelleft='off')
 
+        #save
+        plt.savefig(fname,bbox_inches='tight')
+        plt.clf()
+        plt.cla()
+        plt.close()
+        
 if __name__ == "__main__":
 
     from sklearn.preprocessing import LabelEncoder, LabelBinarizer
     from sklearn.model_selection import train_test_split
+    import os
 
     #load saved files
     print "loading data"
     vocab = np.load('embeddings.npy')
-    with open('data.p', 'rb') as f:
+    with open('data.pkl', 'rb') as f:
         data = pickle.load(f)
 
     num_docs = len(data)
@@ -382,11 +444,14 @@ if __name__ == "__main__":
     #train nn
     print "building text cnn"
     nn = text_cnn(vocab,classes)
+    
+    if not os.path.exists('./savedmodels'):
+        os.makedirs('./savedmodels')
     nn.train(X_train,y_train,epochs=5,validation_data=(X_test,y_test),
-             savebest=True,filepath='cnn.p')
+             savebest=True,filepath='./savedmodels/cnn.p')
     
     #load best nn
-    nn.load('cnn.p')
+    nn.load('./savedmodels/cnn.p')
     acc = nn.score(X_test,y_test)
     y_pred = np.argmax(nn.predict(X_test),1)
     print "CNN - test set accuracy: %.4f" % (acc*100)

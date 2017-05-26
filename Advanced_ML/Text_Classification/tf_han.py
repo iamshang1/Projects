@@ -1,17 +1,12 @@
-'''
-hierarchical attention network for document classification
-https://www.cs.cmu.edu/~diyiy/docs/naacl16.pdf
-'''
-
 import numpy as np
 import tensorflow as tf
 from tensorflow.contrib.rnn import LSTMCell, GRUCell
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
 import sys
 import operator
 import collections
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
@@ -39,8 +34,6 @@ class hierarchical_attention_network(object):
         number of dimensions to use for attention context layer
       - dropout_keep: float (default: 0.5)
         dropout keep rate for final softmax layer
-      - pretrain_pca: int (default: 50)
-        pca dimensions to reduce tfidf vectors in pretraining
        
     methods:
       - pretrain(data,epochs=5)
@@ -65,7 +58,7 @@ class hierarchical_attention_network(object):
         visualize document embeddings created by network
     '''
     def __init__(self,embedding_matrix,num_classes,max_sents,max_words,rnn_type="gru",
-                 rnn_units=200,attention_context=300,dropout_keep=0.5,pretrain_pca=50):
+                 rnn_units=200,attention_context=300,dropout_keep=0.5):
 
         self.rnn_units = rnn_units
         if rnn_type == "gru":
@@ -75,7 +68,10 @@ class hierarchical_attention_network(object):
         else:
             raise Exception("rnn_type parameter must be set to gru or lstm")
         self.dropout_keep = dropout_keep
-        self.pretrain_pca = pretrain_pca
+        self.vocab = embedding_matrix
+        self.embedding_size = embedding_matrix.shape[1]
+        self.max_sents = max_sents
+        self.max_words = max_words
 
         #shared variables
         with tf.variable_scope('words'):
@@ -90,11 +86,10 @@ class hierarchical_attention_network(object):
             self.W_softmax = tf.Variable(self._ortho_weight(rnn_units*2,num_classes),name='W_softmax')
             self.b_softmax = tf.Variable(np.asarray(np.zeros(num_classes),dtype=np.float32),name='b_softmax')
         with tf.variable_scope('pretrain'):
-            self.pretrain_W_softmax = tf.Variable(self._ortho_weight(rnn_units*2,pretrain_pca),name='pretrain_W_softmax')
-            self.pretrain_b_softmax = tf.Variable(np.asarray(np.zeros(pretrain_pca),dtype=np.float32),name='pretrain_b_softmax')
+            self.W_pretrain = tf.Variable(self._ortho_weight(rnn_units*2,self.embedding_size),name='W_pretrain')
+            self.b_pretrain = tf.Variable(np.asarray(np.zeros(self.embedding_size),dtype=np.float32),name='b_pretrain')
         
         #word embeddings
-        self.embedding_size = embedding_matrix.shape[1]
         with tf.variable_scope('embeddings'):
             self.embeddings = tf.cast(tf.Variable(embedding_matrix,name='embeddings'),tf.float32)
         self.dropout = tf.placeholder(tf.float32)
@@ -133,14 +128,14 @@ class hierarchical_attention_network(object):
                     self.rnn_cell(self.rnn_units),self.rnn_cell(self.rnn_units),
                     self.sent_embeds,sequence_length=self.doc_len,dtype=tf.float32)
         self.sent_outputs = tf.concat((tf.squeeze(self.sent_outputs_fw,[0]),tf.squeeze(self.sent_outputs_bw,[0])),1)
-        self.sent_atten = tf.squeeze(tf.map_fn(self._sent_attention_step,self.sent_outputs))
+        self.sent_atten = tf.squeeze(tf.map_fn(self._sent_attention_step,self.sent_outputs),[1,2])
         self.sent_atten = self.sent_atten/tf.reduce_sum(self.sent_atten)
         self.doc_embed = tf.matmul(tf.expand_dims(self.sent_atten,0),self.sent_outputs)
         self.doc_embed_drop = tf.nn.dropout(self.doc_embed,self.dropout)
 
         #pretraining functions
-        self.pred_embed = tf.nn.tanh(tf.matmul(self.doc_embed_drop,self.pretrain_W_softmax)+self.pretrain_b_softmax)
-        self.target_embed = tf.placeholder(tf.float32, shape=[pretrain_pca])
+        self.pred_embed = tf.nn.tanh(tf.matmul(self.doc_embed_drop,self.W_pretrain)+self.b_pretrain)
+        self.target_embed = tf.placeholder(tf.float32, shape=[self.embedding_size])
         self.pretrain_loss = tf.reduce_mean(tf.squared_difference(self.pred_embed,self.target_embed))
         self.word_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,"words")
         self.sent_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES,"sentence")
@@ -220,6 +215,21 @@ class hierarchical_attention_network(object):
             W = v
         return W.astype(np.float32)
     
+    def _list_to_numpy(self,inputval):
+        '''
+        convert variable length lists of input values to zero padded numpy array
+        '''
+        if type(inputval) == list:
+            retval = np.zeros((self.max_sents,self.max_words))
+            for i,line in enumerate(inputval):
+                for j, word in enumerate(line):
+                    retval[i,j] = word
+            return retval
+        elif type(inputval) == np.array:
+            return inputval
+        else:
+            raise Exception("invalid input type")
+    
     def pretrain(self,data,epochs=5):
         '''
         pretrain network on unlabeled data by predicting tfidf vector associated with each doc
@@ -236,36 +246,53 @@ class hierarchical_attention_network(object):
         #flatten documents
         print "flattening texts"
         texts = []
-        for i in range(data.shape[0]):
-            text = data[i].flatten()
-            text = " ".join([str(idx) for idx in text if idx != 0])
+        for i in range(len(data)):
+            if type(data[i]) == np.array:
+                text = data[i].flatten()
+                text = " ".join([str(int(idx)) for idx in text if idx != 0])
+            elif type(data[i]) == list:
+                text = [idx for line in data[i] for idx in line]
+                text = " ".join([str(int(idx)) for idx in text if idx != 0])
+            else:
+                raise Exception("invalid input type")
             texts.append(text)
             
         #run tfidf
         print "creating tfidf vectors"
-        model = TfidfVectorizer(texts,ngram_range=(1,3),min_df=3)
+        tfidf_vocab = {str(int(i)):i for i in range(len(self.vocab))}
+        model = TfidfVectorizer(texts,ngram_range=(1,1),vocabulary=tfidf_vocab)
         tfidf = model.fit_transform(texts)
         tfidf = tfidf.toarray()
         
-        #dimensionality reduction
-        print "reducing dimensionality"
-        pca = PCA(n_components=self.pretrain_pca)
-        tfidf = pca.fit_transform(tfidf)
-        tfidf = (tfidf - tfidf.mean())/(tfidf.std()*2.5)
-        tfidf = np.clip(tfidf,-1,1)
+        #normalize
+        tfidf = tfidf/np.expand_dims(np.sum(tfidf,1),1)
+        
+        #tfidf-weighted word embeddings
+        weighted_embs = []
+        for doc in range(tfidf.shape[0]):
+            emb = np.zeros(self.embedding_size)
+            for word in range(tfidf.shape[1]):
+                emb += self.vocab[word]*tfidf[doc,word]
+            weighted_embs.append(emb)
+        weighted_embs = np.array(weighted_embs)
+        
+        #normalize
+        weighted_embs = (weighted_embs - weighted_embs.mean())/(weighted_embs.std()*2.5)
+        weighted_embs = np.clip(weighted_embs,-1,1)
         
         #train
         for ep in range(epochs):
-            for doc in range(data.shape[0]):
+            for doc in range(len(data)):
        
-                feed_dict = {self.doc_input:data[doc],self.target_embed:tfidf[doc],self.dropout:self.dropout_keep}
+                inputval = self._list_to_numpy(data[doc])
+                feed_dict = {self.doc_input:inputval,self.target_embed:weighted_embs[doc],self.dropout:self.dropout_keep}
                 cost,_ = self.sess.run([self.pretrain_loss,self.pretrain_optimizer],feed_dict=feed_dict)
 
                 sys.stdout.write("pretrain epoch %i, document %i of %i, loss: %f      \r"\
-                             % (ep+1,doc+1,data.shape[0],cost))
+                             % (ep+1,doc+1,len(data),cost))
                 sys.stdout.flush()
             print ""
-     
+    
     def train(self,data,labels,epochs=30,validation_data=None,savebest=False,filepath=None):
         '''
         train network on given data
@@ -304,13 +331,14 @@ class hierarchical_attention_network(object):
             correct = 0.
             
             #train
-            for doc in range(data.shape[0]):
-                feed_dict = {self.doc_input:data[doc],self.labels:labels[doc],self.dropout:self.dropout_keep}
+            for doc in range(len(data)):
+                inputval = self._list_to_numpy(data[doc])
+                feed_dict = {self.doc_input:inputval,self.labels:labels[doc],self.dropout:self.dropout_keep}
                 pred,cost,_ = self.sess.run([self.prediction,self.loss,self.optimizer],feed_dict=feed_dict)
                 if np.argmax(pred) == np.argmax(labels[doc]):
                     correct += 1
                 sys.stdout.write("epoch %i, sample %i of %i, loss: %f      \r"\
-                                 % (i+1,doc+1,data.shape[0],cost))
+                                 % (i+1,doc+1,len(data),cost))
                 sys.stdout.flush()
             print ""
             trainscore = correct/len(data)
@@ -341,8 +369,9 @@ class hierarchical_attention_network(object):
             numpy array of one-hot-encoded predicted labels for input data
         '''
         labels = []
-        for doc in range(data.shape[0]):
-            feed_dict = {self.doc_input:data[doc],self.dropout:1.0}
+        for doc in range(len(data)):
+            inputval = self._list_to_numpy(data[doc])
+            feed_dict = {self.doc_input:inputval,self.dropout:1.0}
             prob = self.sess.run(self.prediction,feed_dict=feed_dict)
             prob = np.squeeze(prob,0)
             one_hot = np.zeros_like(prob)
@@ -375,8 +404,9 @@ class hierarchical_attention_network(object):
         '''        
         #count correct predictions
         correct = []
-        for doc in range(data.shape[0]):
-            feed_dict = {self.doc_input:data[doc],self.dropout:1.0}
+        for doc in range(len(data)):
+            inputval = self._list_to_numpy(data[doc])
+            feed_dict = {self.doc_input:inputval,self.dropout:1.0}
             prob = self.sess.run(self.prediction,feed_dict=feed_dict)
             if np.argmax(prob) == np.argmax(labels[doc]):
                 correct.append(1.)
@@ -446,6 +476,7 @@ class hierarchical_attention_network(object):
         id2word = dict(zip(word2id.values(), word2id.keys()))
         
         #get line importance
+        document = self._list_to_numpy(document)
         feed_dict = {self.doc_input:document,self.dropout:1.0}
         line_importance = self.sess.run(self.sent_atten,feed_dict=feed_dict)
         
@@ -493,20 +524,20 @@ class hierarchical_attention_network(object):
                     word = '<unk>'
                 else:
                     word = id2word[wordidx]
-                alpha = line_importance[lineptr]*0.8
+                alpha = line_importance[lineptr]*0.7
                 ax.text(0,maxdoclen-lineptr,'line %i' % (lineptr+1),
                         bbox={'facecolor':'red','alpha':alpha,'pad':3})
-                alpha = word_importance[lineptr][wordptr]
-                ax.text(start+7,maxdoclen-lineptr,word,
+                alpha = word_importance[lineptr][wordptr]*0.7
+                ax.text(start+5,maxdoclen-lineptr,word,
                         bbox={'facecolor':'blue','alpha':alpha,'pad':3})
-                start += len(word)
+                start += int(float(len(word))/2.5+1.)
                 wordptr += 1
             lineptr += 1
-        ax.axis([0,maxsentlen+7,0,maxdoclen+2])
+        ax.axis([0,maxsentlen+2,0,maxdoclen+2])
         ax.set_axis_off()
         
         #save to disk and reset
-        fig.savefig(fname)
+        fig.savefig(fname,bbox_inches='tight')
         plt.close(fig)
         
     def most_important_words(self, data, word2id):
@@ -536,6 +567,7 @@ class hierarchical_attention_network(object):
             id2word = dict(zip(word2id.values(), word2id.keys()))
             
             #get line importance
+            doc = self._list_to_numpy(doc)
             feed_dict = {self.doc_input:doc,self.dropout:1.0}
             line_importance = self.sess.run(self.sent_atten,feed_dict=feed_dict)
             
@@ -621,6 +653,7 @@ class hierarchical_attention_network(object):
                                  % (i+1,len(data)))
             sys.stdout.flush()
             
+            doc = self._list_to_numpy(doc)
             feed_dict = {self.doc_input:doc,self.dropout:1.0}
             doc_embed = self.sess.run(self.doc_embed,feed_dict=feed_dict)
             embeds.append(doc_embed.flatten())
@@ -632,10 +665,9 @@ class hierarchical_attention_network(object):
         embeds = pca.fit_transform(embeds)
         
         #plot embeddings
-        colors = ['g','b','r','black','grey','m','darkred','gold','c','indigo',\
-                  'darkorange','hotpink','steelblue','salmon','teal']
+        colors = ['r','g','b','c','m','y','orange','k','grey']
         for i in range(len(embeds)):
-            plt.scatter(embeds[i,0],embeds[i,1],s=50,c=colors[labels[i]])
+            plt.scatter(embeds[i,0],embeds[i,1],s=25,c=colors[labels[i]])
             
         #add legend
         if isinstance(key,collections.Iterable):
@@ -644,6 +676,7 @@ class hierarchical_attention_network(object):
                 patches.append(mpatches.Patch(color=colors[k],label=key[k]))
             plt.legend(handles=patches,loc='upper left',bbox_to_anchor=(1.0, 1.0))
         plt.title("HAN Document Embeddings by Class")
+        plt.tick_params(axis='both',which='both',bottom='off',left='off',labelbottom='off',labelleft='off')
         
         #save
         plt.savefig(fname,bbox_inches='tight')
@@ -655,24 +688,33 @@ if __name__ == "__main__":
 
     from sklearn.preprocessing import LabelEncoder, LabelBinarizer
     from sklearn.model_selection import train_test_split
+    import pickle
+    import os
 
     #load saved files
     print "loading data"
     vocab = np.load('embeddings.npy')
-    with open('data.p', 'rb') as f:
+    with open('data.pkl', 'rb') as f:
         data = pickle.load(f)
 
     num_docs = len(data)
 
     #convert data to numpy arrays
     print "converting data to arrays"
+    max_sents = 0
+    max_words = 0
     docs = []
     labels = []
     for i in range(num_docs):
         sys.stdout.write("processing record %i of %i       \r" % (i+1,num_docs))
         sys.stdout.flush()
-        docs.append(data[i]['idx'])
+        doc = data[i]['idx']
+        docs.append(doc)
         labels.append(data[i]['label'])
+        if len(doc) > max_sents:
+            max_sents = len(doc)
+        if len(max(doc,key=len)) > max_words:
+            max_words = len(max(doc,key=len))
     del data
     print
 
@@ -690,12 +732,15 @@ if __name__ == "__main__":
 
     #train nn
     print "building hierarchical attention network"
-    nn = hierarchical_attention_network(vocab,classes,X_train.shape[1],X_train.shape[2])
+    nn = hierarchical_attention_network(vocab,classes,max_sents,max_words)
+    
+    if not os.path.exists('./savedmodels'):
+        os.makedirs('./savedmodels')
     nn.train(X_train,y_train,epochs=5,validation_data=(X_test,y_test),
-             savebest=True,filepath='han.p')
+             savebest=True,filepath='./savedmodels/han.ckpt')
     
     #load best nn
-    nn.load('han.p')
+    nn.load('./savedmodels/han.ckpt')
     acc = nn.score(X_test,y_test)
     y_pred = np.argmax(nn.predict(X_test),1)
     print "HAN - test set accuracy: %.4f" % (acc*100)
