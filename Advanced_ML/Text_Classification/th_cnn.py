@@ -80,9 +80,9 @@ class text_cnn(object):
         self.conv3op = conv2d(input=self.embedded_words, filters=self.conv3W, border_mode='valid')
         self.conv4op = conv2d(input=self.embedded_words, filters=self.conv4W, border_mode='valid')
         self.conv5op = conv2d(input=self.embedded_words, filters=self.conv5W, border_mode='valid')
-        self.conv3nl = T.nnet.elu(self.conv3op + self.conv3b.dimshuffle('x', 0, 'x', 'x'))
-        self.conv4nl = T.nnet.elu(self.conv4op + self.conv4b.dimshuffle('x', 0, 'x', 'x'))
-        self.conv5nl = T.nnet.elu(self.conv5op + self.conv5b.dimshuffle('x', 0, 'x', 'x'))
+        self.conv3nl = T.nnet.relu(self.conv3op + self.conv3b.dimshuffle('x', 0, 'x', 'x'))
+        self.conv4nl = T.nnet.relu(self.conv4op + self.conv4b.dimshuffle('x', 0, 'x', 'x'))
+        self.conv5nl = T.nnet.relu(self.conv5op + self.conv5b.dimshuffle('x', 0, 'x', 'x'))
         
         #word maxpool operation
         self.conv3max = T.max(self.conv3nl,axis=2).flatten()
