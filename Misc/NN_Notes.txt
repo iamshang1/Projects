@@ -1,6 +1,8 @@
 ﻿Architectures
     Feedforward
-        Branching and Serialization
+        Highway Networks
+        Residual Networks
+        Ladder Networks (Semi-supervised Learning)
     Recurrent
         Gated Recurrent Unit
         Long Short Term Memory
@@ -23,8 +25,6 @@
     Word2vec, Doc2Vec
     Deep Reinforcement Learning
     Generative Adversarial Networks
-    Ladder Networks (Semi-supervised Learning)
-    Highway Networks
 
 Activation Functions
     sigmoid
@@ -83,8 +83,7 @@ Optimization Tricks
     Input Feature Mean/Std Normalization
     Xavier Weight Initialization Based on Fan-In/Fan-Out
     Orthogonal Weight Initialization or Identity Matrix Initialization
-    Batch Normalization
-    Residual Deep Learning
+    Batch Normalization and Layer Normalization
     Stochastic Depth Networks
     Competitive Normalization and Max Pooling for Convolutional NN
     Word Vector Initialization for NLP Applications
@@ -106,7 +105,6 @@ NN Libraries and Tools
         keras
     tensorflow
     microsoft cntk
-    microsoft cognitive services
     caffe
-    torch
+    pytorch
     mxnet
