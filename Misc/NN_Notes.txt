@@ -1,7 +1,8 @@
 ﻿Architectures
     Feedforward
-        Highway Networks
         Residual Networks
+        Highway Networks
+        Dense Networks
         Ladder Networks (Semi-supervised Learning)
         Stochastic Depth Networks
     Recurrent
@@ -42,7 +43,7 @@ Cost Functions
    
 Gradient Descent
     batch, minibatch, online
-    momentum and annealing
+    momentum
     rprop and rmsprop
     adagrad and adadelta
     adam
