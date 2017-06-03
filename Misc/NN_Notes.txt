@@ -3,20 +3,20 @@
         Highway Networks
         Residual Networks
         Ladder Networks (Semi-supervised Learning)
+        Stochastic Depth Networks
     Recurrent
         Gated Recurrent Unit
         Long Short Term Memory
-        Echo State Networks
         Bi-Directional RNN
         Attention Mechanisms
         Sequence to Sequence Models
         Dynamic Memory Networks
-        Neural Turing Machines / External Memory
-        Neural Programmers
     Recursive
         Recursive Neural Tensor Network
         Recursive LSTMs
     Convolutional
+        Max Pooling
+        Fractional Maxpool
     Restricted Boltzmann Machines
         Deep Belief Nets
         Autoencoders
@@ -41,41 +41,23 @@ Cost Functions
     max margin
    
 Gradient Descent
-    stochastic
-    minibatch
-    batch
-    momentum
+    batch, minibatch, online
+    momentum and annealing
     rprop and rmsprop
-    adagrad
-    adadelta
+    adagrad and adadelta
     adam
    
     Newton's Method
     Limited Memory Broyden–Fletcher–Goldfarb–Shanno Algorithm
     Hessian Free Optimization and Conjugate Gradients
-
-Learning Rate
-    constant
-    decay
-    bold driver
-    annealing
-    adaptative learning rate for each parameter
    
 Preventing Overfitting
     Add More Data
         Bootstrapping, Patch Selection (for images), and Synthetic Data
     Use a Simpler Model
     Early Stopping based on Validation Set Accuracy
-    LaGrange Constraints on Input Weight Vector Length per Node
     L1/L2 Regularization
     Add Gaussian Noise to Intpus or Weights
-    Stochastic Binary Activation Units with Regular Sigmoid Backprop
-    Maximum A Posterior (Bayesian) Weight Decay
-        MacKay's Method - Output Error Variance and Layer Weight Variance
-    Full Bayesian Learning
-        Grid points that represent possible parameter space
-        Distribution = Grid Point | Data * Output | Data and Grid Point
-        Markov Chain Monte Carlo w/ Random Movement or MiniBatches for evaluating grid points
     Average Different Models (e.g. Boosting/Bagging)
     Dropout Regularization
    
@@ -84,20 +66,19 @@ Optimization Tricks
     Xavier Weight Initialization Based on Fan-In/Fan-Out
     Orthogonal Weight Initialization or Identity Matrix Initialization
     Batch Normalization and Layer Normalization
-    Stochastic Depth Networks
-    Competitive Normalization and Max Pooling for Convolutional NN
     Word Vector Initialization for NLP Applications
         Update Word Vector Weights during Gradient Descent
         2 Channel W2V Initialization - one updated and one static
     Gradient Clipping for Recurrent NN
     Generatively pre-train deep nets using autoencoding layers
-    Distributed Computing and GPU Optimization
-        Model Parallelism
-        Data Parallelism
+    
+Distributed Computing and GPU Optimization
+    Model Parallelism
+    Data Parallelism
   
 Other Applications
     Feature Reduction and Selection
-    Predicting Input Feature Similarity By Comparing Learned Feature Layers
+    Predicting Input Similarity By Comparing Learned Feature Layers
 
 NN Libraries and Tools
     theano
