@@ -8,7 +8,8 @@
     Recurrent
         Gated Recurrent Unit
         Long Short Term Memory
-        Bi-Directional RNN
+        Recurrent Highway Units
+        Bidirectionality
         Attention Mechanisms
         Sequence to Sequence Models
         Dynamic Memory Networks
