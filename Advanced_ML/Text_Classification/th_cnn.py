@@ -231,9 +231,6 @@ class text_cnn(object):
             if validation_data:
                 score = self.score(validation_data[0],validation_data[1])
                 print "epoch %i validation accuracy: %.4f%%" % (i+1, score*100)
-            else:
-                score = self.score(data,labels)
-                print "epoch %i validation accuracy: %.4f%%" % (i+1, score*100)
             if savebest and score >= prevbest:
                 prevbest = score
                 self.save(filepath)

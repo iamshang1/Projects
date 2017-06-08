@@ -348,9 +348,6 @@ class hierarchical_attention_network(object):
             if validation_data:
                 score = self.score(validation_data[0],validation_data[1])
                 print "epoch %i validation accuracy: %.4f%%" % (i+1, score*100)
-            else:
-                score = self.score(data,labels)
-                print "epoch %i validation accuracy: %.4f%%" % (i+1, score*100)
                 
             #save if performance better than previous best
             if savebest and score >= prevbest:
@@ -390,46 +387,20 @@ class hierarchical_attention_network(object):
             3d numpy array (doc x sentence x word ids) of input data
           - labels: numpy array
             2d numpy array of one-hot-encoded labels
-          - bootstrap: boolean (default: False)
-            if True, subsample from predicted labels to get confidence interval of accuracy 
-          - bs_samples: int (default: 100)
-            if bootstrap is set to True, number of times to sample from predicted labels
         
         outputs:
-            if bootstrap == False:
-                float representing accuracy of predicted labels on given data
-            if bootstrap == True:
-                float representing mean accuracy of predicted labels on given data
-                float representing standard dev of predicted labels on given data
+            float representing accuracy of predicted labels on given data
         '''        
-        #count correct predictions
-        correct = []
+        correct = 0.
         for doc in range(len(data)):
             inputval = self._list_to_numpy(data[doc])
             feed_dict = {self.doc_input:inputval,self.dropout:1.0}
             prob = self.sess.run(self.prediction,feed_dict=feed_dict)
             if np.argmax(prob) == np.argmax(labels[doc]):
-                correct.append(1.)
-            else:
-                correct.append(0.)
+                correct += 1.
         
-        #normal accuracy
-        if not bootstrap:
-            accuracy = np.sum(correct)/len(labels)
-            return accuracy
-       
-        #bootstrap accuracy with standard deviation
-        else:
-            correct = np.array(correct)
-            accuracy = []
-            subsample_size = int(len(data) * 0.7)
-            for i in range(bs_samples):
-                shuffle = np.arange(len(data))
-                np.random.shuffle(shuffle)
-                shuffle = shuffle[:subsample_size]
-                subsample = correct[shuffle]
-                accuracy.append(np.sum(subsample)/subsample_size)
-            return np.mean(accuracy),np.std(accuracy)
+        accuracy = correct/len(labels)
+        return accuracy
         
     def save(self,filename):
         '''
