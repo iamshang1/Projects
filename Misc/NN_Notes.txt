@@ -61,7 +61,7 @@ Preventing Overfitting
     L1/L2 Regularization
     Add Gaussian Noise to Intpus or Weights
     Average Different Models (e.g. Boosting/Bagging)
-    Dropout and Freezeout Regularization
+    Dropout Regularization
    
 Optimization Tricks
     Input Feature Mean/Std Normalization
