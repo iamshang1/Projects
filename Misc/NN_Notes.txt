@@ -77,6 +77,8 @@ Optimization Tricks
 Distributed Computing and GPU Optimization
     Model Parallelism
     Data Parallelism
+    Downpour SGD
+    Elastic Averaging SGD
   
 Other Applications
     Feature Reduction and Selection
