@@ -70,18 +70,16 @@ class hierarchical_attention_network(object):
         self.dropout_keep = dropout_keep
         self.vocab = embedding_matrix
         self.embedding_size = embedding_matrix.shape[1]
-        self.max_sents = max_sents
-        self.max_words = max_words
 
         #shared variables
         with tf.variable_scope('words'):
-            self.word_W = tf.Variable(self._ortho_weight(2*rnn_units,attention_context),name='word_W')
-            self.word_b = tf.Variable(np.asarray(np.zeros(attention_context),dtype=np.float32),name='word_b')
-            self.word_context = tf.Variable(self._ortho_weight(attention_context,1),name='word_context')
+            self.word_atten_W = tf.Variable(self._ortho_weight(2*rnn_units,attention_context),name='word_atten_W')
+            self.word_atten_b = tf.Variable(np.asarray(np.zeros(attention_context),dtype=np.float32),name='word_atten_b')
+            self.word_softmax = tf.Variable(self._ortho_weight(attention_context,1),name='word_softmax')
         with tf.variable_scope('sentence'):
-            self.sent_W = tf.Variable(self._ortho_weight(2*rnn_units,attention_context),name='sent_W')
-            self.sent_b = tf.Variable(np.asarray(np.zeros(attention_context),dtype=np.float32),name='sent_b')
-            self.sent_context = tf.Variable(self._ortho_weight(attention_context,1),name='sent_context')
+            self.sent_atten_W = tf.Variable(self._ortho_weight(2*rnn_units,attention_context),name='sent_atten_W')
+            self.sent_atten_b = tf.Variable(np.asarray(np.zeros(attention_context),dtype=np.float32),name='sent_atten_b')
+            self.sent_softmax = tf.Variable(self._ortho_weight(attention_context,1),name='sent_softmax')
         with tf.variable_scope('classify'):
             self.W_softmax = tf.Variable(self._ortho_weight(rnn_units*2,num_classes),name='W_softmax')
             self.b_softmax = tf.Variable(np.asarray(np.zeros(num_classes),dtype=np.float32),name='b_softmax')
@@ -96,19 +94,7 @@ class hierarchical_attention_network(object):
         
         #sentence input and mask
         self.sent_input = tf.placeholder(tf.int32, shape=[max_words])
-        self.word_mask = tf.not_equal(self.sent_input,tf.zeros_like(self.sent_input))
-        self.word_nonzero = tf.boolean_mask(self.sent_input,self.word_mask)
-        self.word_embeds = tf.expand_dims(tf.nn.embedding_lookup(self.embeddings,self.word_nonzero),0)
-        self.sen_len = self._length(self.word_embeds)
-        with tf.variable_scope('words'):
-            [self.word_outputs_fw,self.word_outputs_bw],_ = \
-                    tf.nn.bidirectional_dynamic_rnn(
-                    self.rnn_cell(self.rnn_units),self.rnn_cell(self.rnn_units),
-                    self.word_embeds,sequence_length=self.sen_len,dtype=tf.float32)
-        self.word_outputs = tf.concat((tf.squeeze(self.word_outputs_fw,[0]),tf.squeeze(self.word_outputs_bw,[0])),1)
-        self.word_atten = tf.squeeze(tf.map_fn(self._word_attention_step,self.word_outputs),[1,2])
-        self.word_atten = self.word_atten/tf.reduce_sum(self.word_atten)
-        self.sent_embed = tf.matmul(tf.expand_dims(self.word_atten,0),self.word_outputs)
+        self.sent_embed = self._sent_embedding_step(self.sent_input)
 
         #doc input and mask
         self.doc_input = tf.placeholder(tf.int32, shape=[max_sents,max_words])
@@ -128,9 +114,12 @@ class hierarchical_attention_network(object):
                     self.rnn_cell(self.rnn_units),self.rnn_cell(self.rnn_units),
                     self.sent_embeds,sequence_length=self.doc_len,dtype=tf.float32)
         self.sent_outputs = tf.concat((tf.squeeze(self.sent_outputs_fw,[0]),tf.squeeze(self.sent_outputs_bw,[0])),1)
-        self.sent_atten = tf.squeeze(tf.map_fn(self._sent_attention_step,self.sent_outputs),[1,2])
-        self.sent_atten = self.sent_atten/tf.reduce_sum(self.sent_atten)
-        self.doc_embed = tf.matmul(tf.expand_dims(self.sent_atten,0),self.sent_outputs)
+        
+        #sentence attention
+        self.sent_u = tf.nn.tanh(tf.matmul(self.sent_outputs,self.sent_atten_W) + self.sent_atten_b)
+        self.sent_exp = tf.exp(tf.matmul(self.sent_u,self.sent_softmax))
+        self.sent_atten = self.sent_exp/tf.reduce_sum(self.sent_exp)
+        self.doc_embed = tf.transpose(tf.matmul(tf.transpose(self.sent_outputs),self.sent_atten))
         self.doc_embed_drop = tf.nn.dropout(self.doc_embed,self.dropout)
 
         #pretraining functions
@@ -168,39 +157,34 @@ class hierarchical_attention_network(object):
         length = tf.cast(length, tf.int32)
         return length
     
-    def _sent_embedding_step(self,line):
+    def _sent_embedding_step(self,sent):
         '''
         get sentence embeddings
         '''
-        word_mask = tf.not_equal(line,tf.zeros_like(line))
-        word_nonzero = tf.boolean_mask(line,word_mask)
+        word_mask = tf.not_equal(sent,tf.zeros_like(sent))
+        word_nonzero = tf.boolean_mask(sent,word_mask)
         word_embeds = tf.expand_dims(tf.nn.embedding_lookup(self.embeddings,word_nonzero),0)
-        with tf.variable_scope('words',reuse=True):
-            [word_outputs_fw,word_outputs_bw],_ = \
-                    tf.nn.bidirectional_dynamic_rnn(
-                    self.rnn_cell(self.rnn_units,reuse=True),self.rnn_cell(self.rnn_units,reuse=True),
-                    word_embeds,sequence_length=self._length(word_embeds),dtype=tf.float32)
-        word_outputs = tf.concat((tf.squeeze(word_outputs_fw,[0]),tf.squeeze(word_outputs_bw,[0])),1)
-        word_atten = tf.squeeze(tf.map_fn(self._word_attention_step,word_outputs),[1,2])
-        word_atten = word_atten/tf.reduce_sum(word_atten)
-        sent_embed = tf.matmul(tf.expand_dims(word_atten,0),word_outputs)
-        return tf.squeeze(sent_embed)
-       
-    def _word_attention_step(self,embedding):
-        '''
-        get attention multiplier across words
-        '''
-        embedding = tf.expand_dims(embedding,0)
-        u = tf.nn.tanh(tf.matmul(embedding,self.word_W) + self.word_b)
-        return tf.exp(tf.matmul(u,self.word_context))
+        try:
+            with tf.variable_scope('words'):
+                [word_outputs_fw,word_outputs_bw],_ = \
+                        tf.nn.bidirectional_dynamic_rnn(
+                        self.rnn_cell(self.rnn_units),self.rnn_cell(self.rnn_units),
+                        word_embeds,sequence_length=self._length(word_embeds),dtype=tf.float32)
+            word_outputs = tf.concat((tf.squeeze(word_outputs_fw,[0]),tf.squeeze(word_outputs_bw,[0])),1)
+        except:
+            with tf.variable_scope('words',reuse=True):
+                [word_outputs_fw,word_outputs_bw],_ = \
+                        tf.nn.bidirectional_dynamic_rnn(
+                        self.rnn_cell(self.rnn_units),self.rnn_cell(self.rnn_units),
+                        word_embeds,sequence_length=self._length(word_embeds),dtype=tf.float32)
+            word_outputs = tf.concat((tf.squeeze(word_outputs_fw,[0]),tf.squeeze(word_outputs_bw,[0])),1)
         
-    def _sent_attention_step(self,embedding):
-        '''
-        get attention multiplier across sentences
-        '''
-        embedding = tf.expand_dims(embedding,0)
-        u = tf.nn.tanh(tf.matmul(embedding,self.sent_W) + self.sent_b)
-        return tf.exp(tf.matmul(u,self.sent_context))
+        #attention
+        word_u = tf.nn.tanh(tf.matmul(word_outputs,self.word_atten_W) + self.word_atten_b)
+        word_exp = tf.exp(tf.matmul(word_u,self.word_softmax))
+        word_atten = word_exp/tf.reduce_sum(word_exp)
+        sent_embed = tf.matmul(tf.transpose(word_outputs),word_atten)
+        return tf.squeeze(sent_embed)
         
     def _ortho_weight(self,fan_in,fan_out):
         '''
