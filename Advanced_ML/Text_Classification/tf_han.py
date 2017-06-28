@@ -235,7 +235,7 @@ class hierarchical_attention_network(object):
         print "flattening texts"
         texts = []
         for i in range(len(data)):
-            if type(data[i]) == np.array:
+            if type(data[i]) == np.ndarray:
                 text = data[i].flatten()
                 text = " ".join([str(int(idx)) for idx in text if idx != 0])
             elif type(data[i]) == list:
