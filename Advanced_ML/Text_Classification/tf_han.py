@@ -213,7 +213,7 @@ class hierarchical_attention_network(object):
                 for j, word in enumerate(line):
                     retval[i,j] = word
             return retval
-        elif type(inputval) == np.array:
+        elif type(inputval) == np.ndarray:
             return inputval
         else:
             raise Exception("invalid input type")
