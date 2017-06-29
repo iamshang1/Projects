@@ -69,9 +69,8 @@ Optimization Tricks
     Orthogonal Weight Initialization or Identity Matrix Initialization
     Batch Normalization and Layer Normalization
     Word Vector Initialization for NLP Applications
-        Update Word Vector Weights during Gradient Descent
-        2 Channel W2V Initialization - one updated and one static
-    Gradient Clipping for Recurrent NN
+    Gradient Clipping for Recurrent NNs
+    Scheduled Sampling for Sequence Prediction Tasks
     Generatively pre-train deep nets using autoencoding layers
     
 Distributed Computing and GPU Optimization
