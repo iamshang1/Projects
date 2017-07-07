@@ -1,7 +1,3 @@
-'''
-multigpu implementation of HAN using EASGD
-'''
-
 import numpy as np
 import tensorflow as tf
 from tensorflow.contrib.rnn import LSTMCell, GRUCell
@@ -9,6 +5,8 @@ from tensorflow.contrib.layers import xavier_initializer
 import sys
 import threading
 import time
+import random
+import copy
 
 class hierarchical_attention_network(object):
 
@@ -28,6 +26,8 @@ class hierarchical_attention_network(object):
         self.embeddings = tf.constant(self.vocab,tf.float32)
         self.embedding_size = embedding_matrix.shape[1]
         self.gpus = gpus
+        self.max_sents = max_sents
+        self.max_words = max_words
 
         #central variables and ops on cpu
         with tf.device("/cpu:0"):
@@ -177,14 +177,14 @@ class hierarchical_attention_network(object):
         while len(self.tempdata) > 0:
         
             #pop batch size from data and labels
-            data = self.tempdata[-batch_size:]
+            data = self._list_to_numpy(self.tempdata[-batch_size:],batch_size)
             self.tempdata = self.tempdata[:-batch_size]
             label = self.templabels[-batch_size:]
             self.templabels = self.templabels[:-batch_size]
             
             #in case batch size exceeds list size 
             if len(data) == 0:
-                data = self.tempdata[:]
+                data =  self._list_to_numpy(self.tempdata[:],batch_size)
                 self.tempdata = self.tempdata[:0]
                 label = self.templabels[:]
                 self.templabels = self.templabels[:0]
@@ -199,6 +199,22 @@ class hierarchical_attention_network(object):
             sys.stdout.write("epoch %i, processed %i of %i, loss: %f      \r"\
                              % (epoch+1,self.processed,datalen,cost))
             sys.stdout.flush()
+    
+    def _list_to_numpy(self,inputval,batch_size):
+        '''
+        convert variable length lists of input values to zero padded numpy array
+        '''
+        if type(inputval) == list:
+            retval = np.zeros((batch_size,self.max_sents,self.max_words))
+            for i,doc in enumerate(inputval):
+                for j,line in enumerate(doc):
+                    for k, word in enumerate(line):
+                        retval[i,j,k] = word
+            return retval
+        elif type(inputval) == np.ndarray:
+            return inputval
+        else:
+            raise Exception("invalid input type")
     
     def train(self,data,labels,batch_size=30,epochs=30,validation_data=None,savebest=False,
               filepath=None):
@@ -218,16 +234,16 @@ class hierarchical_attention_network(object):
         for epoch in range(epochs):
             self.correct = 0.
             self.processed = 0
+            start = time.time()
             
             #shuffle
-            shuffle = np.arange(len(data))
-            np.random.shuffle(shuffle)
-            data = data[shuffle]
-            labels = labels[shuffle]
+            combined = list(zip(data, labels))
+            random.shuffle(combined)
+            data[:], labels[:] = zip(*combined)
             
             #save data into temporary shared variable
-            self.tempdata = np.copy(data)
-            self.templabels = np.copy(labels)
+            self.tempdata = data[:]
+            self.templabels = labels[:]
             
             #run on separate gpu threads
             train_threads = []
@@ -242,6 +258,7 @@ class hierarchical_attention_network(object):
               time.sleep(0.5)
 
             print ""
+            print "time taken: ", time.time() - start
             trainscore = self.correct/len(data)
             print "epoch %i training accuracy: %.4f%%" % (epoch+1, trainscore*100)
 
@@ -257,7 +274,7 @@ class hierarchical_attention_network(object):
         correct = 0.
         
         for i in range(len(data)):
-            doc = data[i:i+1]
+            doc = self._list_to_numpy(data[i:i+1],1)
             label = labels[i:i+1]
         
             #get prediction
@@ -276,3 +293,57 @@ class hierarchical_attention_network(object):
 
     def load(self,filename):
         self.saver.restore(self.sess,filename)
+
+if __name__ == "__main__":
+
+    from sklearn.preprocessing import LabelEncoder, LabelBinarizer
+    from sklearn.model_selection import train_test_split
+    import pickle
+    import os
+
+    #load saved files
+    print "loading data"
+    vocab = np.load('embeddings.npy')
+    with open('data.pkl', 'rb') as f:
+        data = pickle.load(f)
+
+    num_docs = len(data)
+
+    #convert data to numpy arrays
+    print "converting data to arrays"
+    max_sents = 0
+    max_words = 0
+    docs = []
+    labels = []
+    for i in range(num_docs):
+        sys.stdout.write("processing record %i of %i       \r" % (i+1,num_docs))
+        sys.stdout.flush()
+        doc = data[i]['idx']
+        docs.append(doc)
+        labels.append(data[i]['label'])
+        if len(doc) > max_sents:
+            max_sents = len(doc)
+        if len(max(doc,key=len)) > max_words:
+            max_words = len(max(doc,key=len))
+    del data
+    print
+
+    #label encoder
+    le = LabelEncoder()
+    y = le.fit_transform(labels)
+    classes = len(le.classes_)
+    lb = LabelBinarizer()
+    y_bin = lb.fit_transform(y)
+    del labels
+
+    #test train split
+    X_train,X_test,y_train,y_test = train_test_split(docs,y_bin,test_size=0.1,
+                                    random_state=1234,stratify=y)
+
+    #train nn
+    print "training hierarchical attention network"
+    nn = hierarchical_attention_network(vocab,classes,max_sents,max_words,gpus=2)
+    nn.train(X_train,y_train,epochs=2,validation_data=(X_test,y_test),batch_size=30)
+
+    test_acc = nn.score(X_test,y_test)
+    print 'final test accuracy: %.4f%%' % (test_acc*100)
