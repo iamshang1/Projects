@@ -70,6 +70,8 @@ class hierarchical_attention_network(object):
         self.dropout_keep = dropout_keep
         self.vocab = embedding_matrix
         self.embedding_size = embedding_matrix.shape[1]
+        self.embeddings = embedding_matrix.astype(np.float32)
+        self.dropout = tf.placeholder(tf.float32)
 
         #shared variables
         with tf.variable_scope('words'):
@@ -86,11 +88,6 @@ class hierarchical_attention_network(object):
         with tf.variable_scope('pretrain'):
             self.W_pretrain = tf.Variable(self._ortho_weight(rnn_units*2,self.embedding_size),name='W_pretrain')
             self.b_pretrain = tf.Variable(np.asarray(np.zeros(self.embedding_size),dtype=np.float32),name='b_pretrain')
-        
-        #word embeddings
-        with tf.variable_scope('embeddings'):
-            self.embeddings = tf.cast(tf.Variable(embedding_matrix,name='embeddings'),tf.float32)
-        self.dropout = tf.placeholder(tf.float32)
         
         #sentence input and mask
         self.sent_input = tf.placeholder(tf.int32, shape=[max_words])
@@ -175,7 +172,9 @@ class hierarchical_attention_network(object):
         '''
         word_mask = tf.not_equal(sent,tf.zeros_like(sent))
         word_nonzero = tf.boolean_mask(sent,word_mask)
-        word_embeds = tf.expand_dims(tf.nn.embedding_lookup(self.embeddings,word_nonzero),0)
+        word_embeds = tf.expand_dims(tf.gather(tf.get_variable('embeddings',
+                      initializer=self.embeddings,dtype=tf.float32),word_nonzero),0)
+        
         with tf.variable_scope('words',reuse=True):
             [word_outputs_fw,word_outputs_bw],_ = \
                     tf.nn.bidirectional_dynamic_rnn(
