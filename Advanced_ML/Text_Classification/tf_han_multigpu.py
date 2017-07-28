@@ -153,7 +153,7 @@ class hierarchical_attention_network(object):
         num_words = tf.reduce_sum(tf.cast(tf.greater(line,0),tf.int32),1)
         max_words = tf.reduce_max(num_words)
         line = line[:,:max_words]
-        word_embeds = tf.nn.embedding_lookup(tf.get_variable('embeddings',initializer=self.embeddings),line)
+        word_embeds = tf.gather(tf.get_variable('embeddings',initializer=self.embeddings),line)
         
         #word rnn layer
         with tf.variable_scope('words'):
