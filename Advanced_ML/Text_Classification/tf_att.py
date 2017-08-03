@@ -8,16 +8,16 @@ os.environ["CUDA_VISIBLE_DEVICES"]="-1"
 import numpy as np
 import tensorflow as tf
 import sys
+import time
 
 class hierarchical_attention_transformer(object):
     '''
     hiearchical attention transformer for document classification
     https://arxiv.org/pdf/1706.03762.pdf
     '''
-    def __init__(self,embedding_matrix,num_classes,max_sents,max_words,attention_blocks=3,
-                 attention_heads=7,attention_size=350,dropout_keep=0.9):
+    def __init__(self,embedding_matrix,num_classes,max_sents,max_words,
+                 attention_heads=8,attention_size=512,dropout_keep=0.9):
 
-        self.attention_blocks = attention_blocks
         self.attention_heads = attention_heads
         self.attention_size = attention_size
         self.vocab = embedding_matrix
@@ -25,6 +25,7 @@ class hierarchical_attention_transformer(object):
         self.embeddings = embedding_matrix.astype(np.float32)
         self.dropout_keep = dropout_keep
         self.dropout = tf.placeholder(tf.float32)
+        self.max_words = max_words
         
         #shared variables
         self.word_atten_W = tf.Variable(self._ortho_weight(attention_size,attention_size))
@@ -48,29 +49,26 @@ class hierarchical_attention_transformer(object):
         self.sent_embeds = tf.nn.dropout(self.sent_embeds,self.dropout)
 
         #sentence attention blocks
-        for i in range(self.attention_blocks):
-            with tf.variable_scope("sent_block_%i" % i):  
-                Q = tf.layers.dense(self.sent_embeds,self.attention_size,activation=tf.nn.relu)
-                K = tf.layers.dense(self.sent_embeds,self.attention_size,activation=tf.nn.relu)
-                V = tf.layers.dense(self.sent_embeds,self.attention_size,activation=tf.nn.relu)
-                
-                Q_ = tf.concat(tf.split(Q,self.attention_heads,axis=2),axis=0)
-                K_ = tf.concat(tf.split(K,self.attention_heads,axis=2),axis=0)
-                V_ = tf.concat(tf.split(V,self.attention_heads,axis=2),axis=0)
-                
-                outputs = tf.matmul(Q_,tf.transpose(K_,[0, 2, 1]))
-                outputs = outputs/(K_.get_shape().as_list()[-1]**0.5)
-                outputs = tf.nn.softmax(outputs)
-                outputs = tf.nn.dropout(outputs,self.dropout)
-                outputs = tf.matmul(outputs,V_)
-                outputs = tf.concat(tf.split(outputs,self.attention_heads,axis=0),axis=2)
-                outputs = tf.nn.dropout(outputs,self.dropout)
-                self.sent_embeds += outputs
-                self.sent_embeds = tf.contrib.layers.layer_norm(self.sent_embeds)
+        with tf.variable_scope("sent_block"):  
+            Q = tf.layers.dense(self.sent_embeds,self.attention_size,activation=tf.nn.relu)
+            K = tf.layers.dense(self.sent_embeds,self.attention_size,activation=tf.nn.relu)
+            V = tf.layers.dense(self.sent_embeds,self.attention_size,activation=tf.nn.relu)
+            
+            Q_ = tf.concat(tf.split(Q,self.attention_heads,axis=2),axis=0)
+            K_ = tf.concat(tf.split(K,self.attention_heads,axis=2),axis=0)
+            V_ = tf.concat(tf.split(V,self.attention_heads,axis=2),axis=0)
+            
+            outputs = tf.matmul(Q_,tf.transpose(K_,[0, 2, 1]))
+            outputs = outputs/(K_.get_shape().as_list()[-1]**0.5)
+            outputs = tf.nn.softmax(outputs)
+            outputs = tf.nn.dropout(outputs,self.dropout)
+            outputs = tf.matmul(outputs,V_)
+            outputs = tf.concat(tf.split(outputs,self.attention_heads,axis=0),axis=2)
+            outputs = tf.nn.dropout(outputs,self.dropout)
 
         #create sentence embedding
-        self.sent_embeds = tf.squeeze(self.sent_embeds,[0])
-        self.sent_u = tf.nn.tanh(tf.matmul(self.sent_embeds,self.sent_atten_W)+self.sent_atten_b)
+        self.sent_embeds = tf.squeeze(outputs,[0])
+        self.sent_u = tf.nn.relu(tf.matmul(self.sent_embeds,self.sent_atten_W)+self.sent_atten_b)
         self.sent_exp = tf.exp(tf.matmul(self.sent_u,self.sent_softmax))
         self.sent_atten = self.sent_exp/tf.reduce_sum(self.sent_exp)
         self.doc_embed = tf.transpose(tf.matmul(tf.transpose(self.sent_embeds),self.sent_atten))
@@ -101,33 +99,30 @@ class hierarchical_attention_transformer(object):
         word_embeds = tf.expand_dims(tf.gather(tf.get_variable('embeddings',
                       initializer=self.embeddings,dtype=tf.float32),word_nonzero),0)
         word_embeds = tf.nn.dropout(word_embeds,self.dropout)
-        
-        #word attention blocks
-        for i in range(self.attention_blocks):
-            with tf.variable_scope("word_block_%i" % i):
-            
-                #attention block
-                Q = tf.layers.dense(word_embeds,self.attention_size,activation=tf.nn.relu)
-                K = tf.layers.dense(word_embeds,self.attention_size,activation=tf.nn.relu)
-                V = tf.layers.dense(word_embeds,self.attention_size,activation=tf.nn.relu)
-                
-                Q_ = tf.concat(tf.split(Q,self.attention_heads,axis=2),axis=0)
-                K_ = tf.concat(tf.split(K,self.attention_heads,axis=2),axis=0)
-                V_ = tf.concat(tf.split(V,self.attention_heads,axis=2),axis=0)
-                
-                outputs = tf.matmul(Q_,tf.transpose(K_,[0, 2, 1]))
-                outputs = outputs/(K_.get_shape().as_list()[-1]**0.5)
-                outputs = tf.nn.softmax(outputs)
-                outputs = tf.nn.dropout(outputs,self.dropout)
-                outputs = tf.matmul(outputs,V_)
-                outputs = tf.concat(tf.split(outputs,self.attention_heads,axis=0),axis=2)
-                outputs = tf.nn.dropout(outputs,self.dropout)
-                word_embeds += outputs
-                word_embeds = tf.contrib.layers.layer_norm(word_embeds)
 
+        #word attention blocks
+        with tf.variable_scope("word_block"):
+        
+            #attention block
+            Q = tf.layers.dense(word_embeds,self.attention_size,activation=tf.nn.relu)
+            K = tf.layers.dense(word_embeds,self.attention_size,activation=tf.nn.relu)
+            V = tf.layers.dense(word_embeds,self.attention_size,activation=tf.nn.relu)
+            
+            Q_ = tf.concat(tf.split(Q,self.attention_heads,axis=2),axis=0)
+            K_ = tf.concat(tf.split(K,self.attention_heads,axis=2),axis=0)
+            V_ = tf.concat(tf.split(V,self.attention_heads,axis=2),axis=0)
+            
+            outputs = tf.matmul(Q_,tf.transpose(K_,[0, 2, 1]))
+            outputs = outputs/(K_.get_shape().as_list()[-1]**0.5)
+            outputs = tf.nn.softmax(outputs)
+            outputs = tf.nn.dropout(outputs,self.dropout)
+            outputs = tf.matmul(outputs,V_)
+            outputs = tf.concat(tf.split(outputs,self.attention_heads,axis=0),axis=2)
+            outputs = tf.nn.dropout(outputs,self.dropout)
+            
         #create sentence embedding
-        word_embeds = tf.squeeze(word_embeds,[0])
-        word_u = tf.nn.tanh(tf.matmul(word_embeds,self.word_atten_W)+self.word_atten_b)
+        word_embeds = tf.squeeze(outputs,[0])
+        word_u = tf.nn.relu(tf.matmul(word_embeds,self.word_atten_W)+self.word_atten_b)
         word_exp = tf.exp(tf.matmul(word_u,self.word_softmax))
         word_atten = word_exp/tf.reduce_sum(word_exp)
         sent_embed = tf.matmul(tf.transpose(word_embeds),word_atten)
@@ -182,6 +177,7 @@ class hierarchical_attention_transformer(object):
         prevbest = 0    
         for i in range(epochs):
             correct = 0.
+            start = time.time()
             
             #train
             for doc in range(data.shape[0]):
@@ -192,7 +188,8 @@ class hierarchical_attention_transformer(object):
                 sys.stdout.write("epoch %i, sample %i of %i, loss: %f      \r"\
                                  % (i+1,doc+1,data.shape[0],cost))
                 sys.stdout.flush()
-            print ""
+            print
+            print "training time: %.2f" % (time.time()-start)
             trainscore = correct/len(data)
             print "epoch %i training accuracy: %.4f%%" % (i+1, trainscore*100)
             
