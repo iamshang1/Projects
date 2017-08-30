@@ -27,6 +27,7 @@
     Word2vec, Doc2Vec
     Deep Reinforcement Learning
     Generative Adversarial Networks
+        Wasserstein GANs
 
 Activation Functions
     sigmoid
