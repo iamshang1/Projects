@@ -3,12 +3,10 @@
         Residual Networks
         Highway Networks
         Dense Networks
-        Ladder Networks (Semi-supervised Learning)
         Stochastic Depth Networks
     Recurrent
         Gated Recurrent Unit
         Long Short Term Memory
-        Recurrent Highway Units
         Bidirectionality
         Attention Mechanisms
         Sequence to Sequence Models
@@ -17,17 +15,35 @@
         Recursive Neural Tensor Network
         Recursive LSTMs
     Convolutional
-        Max Pooling
-        Fractional Maxpool
-    Restricted Boltzmann Machines
-        Deep Belief Nets
+        Deformable Convolution
+        Max/Average Pooling
+            Fractional
+        1x1 Bottleneck Layers
+        Inception Blocks
+        Attention Modules
+            Faster Region-Based CNN
+    Embeddings and Data Reduction
         Autoencoders
             Denoising
-            Variational
-    Word2vec, Doc2Vec
-    Deep Reinforcement Learning
-    Generative Adversarial Networks
-        Wasserstein GANs
+        Word2vec
+            Doc2Vec
+            GloVe
+    Reinforcement
+        Deep Q Learning
+    Generative
+        Variational Autoencoders
+        Generative Adversarial Networks
+            Wasserstein GANs
+    Semi-Supervised
+        Autoencoder Pretraining
+        Ladder Networks
+        GANs
+    Multitask
+        Cross-Stitch Networks
+        Joint Many-Task Models
+    Uncertainty Quantification
+        Bayesian Neural Networks
+        Dropout During Inference
 
 Activation Functions
     sigmoid
@@ -35,6 +51,7 @@ Activation Functions
     Rectified Linear Units
         Leaky ReLUs
     Exponential Linear Units
+        SELUs
     maxout
     softmax
 
@@ -48,7 +65,7 @@ Gradient Descent
     momentum
     rprop and rmsprop
     adagrad and adadelta
-    adam
+    adam and adamax
    
     Newton's Method
     Limited Memory Broyden–Fletcher–Goldfarb–Shanno Algorithm
@@ -60,9 +77,10 @@ Preventing Overfitting
     Use a Simpler Model
     Early Stopping based on Validation Set Accuracy
     L1/L2 Regularization
-    Add Gaussian Noise to Intpus or Weights
+    Add Gaussian Noise to Intpus or Weights (Adversarial Perturbations)
     Average Different Models (e.g. Boosting/Bagging)
     Dropout Regularization
+    Batch and Layer Normalization
    
 Optimization Tricks
     Input Feature Mean/Std Normalization
@@ -79,17 +97,15 @@ Distributed Computing and GPU Optimization
     Data Parallelism
     Downpour SGD
     Elastic Averaging SGD
+    Delay Compensation SGD
   
 Other Applications
     Feature Reduction and Selection
     Predicting Input Similarity By Comparing Learned Feature Layers
 
 NN Libraries and Tools
-    theano
-        lasagne
-        keras
     tensorflow
     microsoft cntk
-    caffe
+    caffe 2
     pytorch
     mxnet

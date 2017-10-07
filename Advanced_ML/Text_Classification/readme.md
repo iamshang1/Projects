@@ -47,7 +47,7 @@ layer is then fed into a softmax classifier.
 For our exercise, we use gensim's word2vec to create 200-dimension word embeddings
 for the dataset. We use a three-word, four-word, and five-word window, each with
 100 feature maps, and applied 50% dropout to the softmax layer to reduce overfitting.
-Our CNN achieved a test set accuracy of 60.15%.
+Our CNN achieved a test set accuracy of 64.15%.
 
 ## Hierarchical Attention Networks
 
@@ -74,5 +74,5 @@ and extract the .json file. Then run the following:
  - feature_extraction.py \<path to Yelp json\>
  - naive_bayes.py
  - xg-boost.py
- - th_cnn.py
- - th_han.py
+ - tf_cnn.py
+ - tf_han.py
