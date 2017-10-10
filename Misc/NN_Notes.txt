@@ -25,6 +25,8 @@
     Embeddings and Data Reduction
         Autoencoders
             Denoising
+            Sparse
+            Variational
         Word2vec
             Doc2Vec
             GloVe
