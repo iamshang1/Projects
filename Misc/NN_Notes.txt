@@ -61,6 +61,9 @@ Cost Functions
     squared error
     cross entropy
     max margin
+    contrastive loss
+    center loss
+    triplet loss
    
 Gradient Descent
     batch, minibatch, online
