@@ -22,6 +22,7 @@
         Inception Blocks
         Attention Modules
             Faster Region-Based CNN
+    Siamese Networks
     Embeddings and Data Reduction
         Autoencoders
             Denoising
@@ -38,6 +39,7 @@
             Wasserstein GANs
     Semi-Supervised
         Autoencoder Pretraining
+            Language Model Pretraining for RNNs
         Ladder Networks
         GANs
     Multitask
@@ -45,7 +47,8 @@
         Joint Many-Task Models
     Uncertainty Quantification
         Bayesian Neural Networks
-        Dropout During Inference
+        Dropout
+        Temperature Scaling
 
 Activation Functions
     sigmoid
