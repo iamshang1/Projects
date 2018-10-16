@@ -1,6 +1,6 @@
 ## Hierarchical Convolutional Attention Networks for Text Classification
 
-This repo contains some of the code used for the paper [https://aclanthology.info/papers/W18-3002/w18-3002](*Hierarchical Convolutional Attention Networks for Text Classification*). 
+This repo contains some of the code used for the paper [*Hierarchical Convolutional Attention Networks for Text Classification*](https://aclanthology.info/papers/W18-3002/w18-3002/). 
 
 ### Requirements
 
