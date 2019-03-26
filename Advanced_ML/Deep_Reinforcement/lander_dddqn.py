@@ -165,7 +165,7 @@ for ep in range(5000):
     observation = env.reset()
     mean_loss = []
     
-    #terminate episode when done
+    #run each episode for 1000 steps
     for t in range(1000):
         
         #get next action
@@ -188,7 +188,7 @@ for ep in range(5000):
         observation = next_observation
         steps_in_ep += 1
         
-        #end episode if over
+        #terminate episode if done
         if done: 
             break
 
