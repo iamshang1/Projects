@@ -36,7 +36,7 @@ class agent(object):
         
         #optimizer
         self.loss = tf.reduce_mean(tf.losses.huber_loss(self.target,self.Q_pred))
-        self.optimizer = tf.train.AdamOptimizer(0.0001,0.9,0.99).minimize(self.loss)
+        self.optimizer = tf.train.AdamOptimizer(0.00005,0.9,0.99).minimize(self.loss)
         
         #init op
         self.init_op = tf.global_variables_initializer()
@@ -135,7 +135,7 @@ DQagent = agent(action_size=action_size)
 viz = False
 
 #run episodes
-for ep in range(500):
+for ep in range(1000):
     state = env.reset()
     done = False
     t = 0
