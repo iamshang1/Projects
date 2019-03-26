@@ -149,8 +149,8 @@ for ep in range(5000):
     print('Episode %2i, Reward: %6.2f, Steps: %4i, Loss: %.4f' % 
                 (ep,total_reward,steps_in_ep,loss))
 
-    #enable vizualization once model gets over 200 score
-    if total_reward >= 200:
+    #enable vizualization once model gets over 200
+    if total_reward >= 200 and ep > 2000:
         viz = True
                 
 env.close()

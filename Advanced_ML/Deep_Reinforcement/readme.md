@@ -1,11 +1,9 @@
-**Under Construction**
-
 # Exercises in Deep Reinforcement Learning
 
 This project inludes several exercises applying variations of deep reinforcement learning on OpenAI Gym environments.
 
-![](cartpole.gif)
 <img src="cartpole.gif" width="296" height="175" />
+<img src="lander.gif" width="296" height="175" />
 
 ### Deep Q-Networks
 
@@ -39,5 +37,5 @@ Like our policy network, our actor-critic trains once per episode using the obse
 
  - **cartpole_dqn.py** trains in about 350 episodes (including burn-in), with small chance of failure to converge
  - **lander_dddqn.py** trains in about 500 episodes (including burn-in)
- - **lander_policy.py** trains in about 1000 episodes, but requires far fewer updates than lander_dddqn.py because only one update is made per episode
- - **lander_ac2.py** trains in about 1000 episodes, but requires far fewer updates than lander_dddqn.py because only one update is made per episode
+ - **lander_policy.py** trains in roughly 3000-5000 episodes, but requires far fewer updates than lander_dddqn.py because only one update is made per episode
+ - **lander_ac2.py** trains in roughly 2000-3000 episodes, but requires far fewer updates than lander_dddqn.py because only one update is made per episode

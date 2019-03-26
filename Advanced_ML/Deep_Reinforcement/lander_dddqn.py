@@ -198,7 +198,7 @@ for ep in range(5000):
          (ep,total_reward,steps_in_ep,mean_loss,epsilon))
 
     #enable vizualization once model gets over 200 score
-    if total_reward >= 200:
+    if total_reward >= 200 and ep > 500:
         viz = True
     
 env.close()
