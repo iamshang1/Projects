@@ -176,7 +176,7 @@ for ep in range(500):
           'Training Loss {:.4f}'.format(loss))
           
     #enable vizualization once model gets a perfect score
-    if total_reward == 200:
+    if total_reward >= 200:
         viz = True
 
 env.close()
