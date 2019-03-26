@@ -32,11 +32,11 @@ class agent(object):
                         kernel_initializer=tf.contrib.layers.xavier_initializer())
                         
         neg_log_prob = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.actor_logits,labels=self.action)
-        actor_loss = self.loss = tf.reduce_mean(neg_log_prob*self.advantage)
-        critic_loss = tf.reduce_mean(tf.losses.huber_loss(tf.expand_dims(self.value_target,1),self.value))
-        self.loss = actor_loss + critic_loss
+        self.actor_loss = tf.reduce_mean(neg_log_prob*self.advantage)
+        self.critic_loss = tf.reduce_mean(tf.losses.huber_loss(tf.expand_dims(self.value_target,1),self.value))
         
-        self.optimizer = tf.train.AdamOptimizer(0.001).minimize(self.loss)        
+        self.optimizer_actor = tf.train.AdamOptimizer(0.001).minimize(self.actor_loss)
+        self.optimizer_critic = tf.train.AdamOptimizer(0.0001).minimize(self.critic_loss) 
         
         self.sess = tf.Session()
         self.saver = tf.train.Saver()
@@ -67,11 +67,12 @@ class agent(object):
         
         #train
         d = {self.state:states,self.action:actions,self.advantage:td_errors,self.value_target:td_targets}
-        loss,_ = self.sess.run([self.loss,self.optimizer],feed_dict=d)
+        actor_loss,critic_loss,_,_ = self.sess.run([self.actor_loss,self.critic_loss,
+                                     self.optimizer_actor,self.optimizer_critic],feed_dict=d)
                     
         self.replay_memory = []
         
-        return loss
+        return actor_loss,critic_loss
         
     def predict(self,state):
     
@@ -118,9 +119,9 @@ for ep in range(5000):
         if done: 
             break
             
-    loss = ac2_agent.train()
-    print('Episode %2i, Reward: %6.2f, Steps: %4i, Loss: %.4f' % 
-                (ep,total_reward,steps_in_ep,loss))
+    actor_loss,critic_loss = ac2_agent.train()
+    print('Episode %2i, Reward: %6.2f, Steps: %4i, Actor Loss: %.4f, Critic Loss: %.4f' % 
+                (ep,total_reward,steps_in_ep,actor_loss,critic_loss))
 
     if ep % 100 == 0:
         ac2_agent.save("savedmodels/lander.ckpt")
