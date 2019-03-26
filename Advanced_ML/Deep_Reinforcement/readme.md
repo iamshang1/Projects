@@ -2,8 +2,7 @@
 
 This project inludes several exercises applying variations of deep reinforcement learning on OpenAI Gym environments.
 
-<img src="cartpole.gif" width="296" height="175" />
-<img src="lander.gif" width="296" height="175" />
+<img src="cartpole.gif" width="296" height="175" /><img src="lander.gif" width="296" height="175" />
 
 ### Deep Q-Networks
 
