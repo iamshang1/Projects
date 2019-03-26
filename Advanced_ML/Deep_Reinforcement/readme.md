@@ -4,8 +4,8 @@
 
 This project inludes several exercises applying variations of deep reinforcement learning on OpenAI Gym environments.
 
-![](https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Deep_Reinforcement/cartpole.gif)
-<img src="https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Deep_Reinforcement/cartpole.gif" width="296" height="175" />
+![](cartpole.gif)
+<img src="cartpole.gif" width="296" height="175" />
 
 ### Deep Q-Networks
 
