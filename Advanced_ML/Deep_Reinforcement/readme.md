@@ -36,7 +36,7 @@ Like our policy network, our actor-critic trains once per episode using the obse
 
 ### Notes on Running Code
 
- - cartpole_dqn.py trains in about 200 episodes (including burn-in)
- - lander_dddqn.py trains in about 500 episodes (including burn-in)
- - lander_policy.py trains in about 1000 episodes, but requires far fewer updates than lander_dddqn.py because only one update is made per episode
- - lander_ac2.py trains in about 1000 episodes, but requires far fewer updates than lander_dddqn.py because only one update is made per episode
+ - **cartpole_dqn.py** trains in about 200 episodes (including burn-in)
+ - **lander_dddqn.py** trains in about 500 episodes (including burn-in)
+ - **lander_policy.py** trains in about 1000 episodes, but requires far fewer updates than lander_dddqn.py because only one update is made per episode
+ - **lander_ac2.py** trains in about 1000 episodes, but requires far fewer updates than lander_dddqn.py because only one update is made per episode
