@@ -1,2 +1,0 @@
-model_checkpoint_path: "lander.ckpt"
-all_model_checkpoint_paths: "lander.ckpt"

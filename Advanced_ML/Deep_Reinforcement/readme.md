@@ -10,13 +10,13 @@ This project inludes several exercises applying variations of deep reinforcement
 
 In Q-learning, given a state, each action possible from that state is assigned a Q-value that indicates the potential value of taking that action from the state; these Q-values are learned over time using a method such as temporal difference learning (see [basic Q-learning project](https://github.com/iamshang1/Projects/tree/master/Basic_ML/Reinforcement_Learning)). In traditional Q-learning, the Q-values for every possible state are stored in a table, which is intractable for problems with large state/action spaces. In deep Q-learning, each state is represented as a set of input features, and the Q-values for each possible action are then calculated using a neural network; this eliminates the need to store the Q-values for every possible state/actions in memory.
 
-### Double Deep Q-Networks
-
-Deep Q-learning networks are generally trained using temporal difference learning. As a result, basic DQNs can be difficult to train because the target Q-values used for training are calculated using the same network that is being trained. In other words, each update made to the network directly effects the calculations of the target Q-values used for the following update,  so the network is always chasing a moving target. One way to mitigate this is to use two networks in parallel -- a fast network and a slow network. The fast network is updated at every step using the target Q-values calculated by the slow network, which is updated once every *X* steps by copying over the parameters from the fast network.
-
 On their own, DQNs will always choose the action with the highest Q-value. If the DQN starts with a suboptimal policy, the DQN may end up consistently choosing suboptimal actions and never explore and learn better actions. Therefore, DQNs generally utilize an explore/exploit schedule -- the network will begin by choosing random actions, and over time the network switches over to choosing actions with the highest Q-value.
 
 An additional common property of DQNs is the use of a replay memory. Because the observations from any one episode are highly correlated, training repeatedly on the most recent observations can cause the DQN to overfit. Therefore, we save the *X* most recent observations into a replay memory and sample randomly from the replay memory to create training batches.
+
+### Double Deep Q-Networks
+
+Deep Q-learning networks are generally trained using temporal difference learning. As a result, basic DQNs can be difficult to train because the target Q-values used for training are calculated using the same network that is being trained. In other words, each update made to the network directly effects the calculations of the target Q-values used for the following update,  so the network is always chasing a moving target. One way to mitigate this is to use two networks in parallel -- a fast network and a slow network. The fast network is updated at every step using the target Q-values calculated by the slow network, which is updated once every *X* steps by copying over the parameters from the fast network.
 
 ### Dueling Deep Q-Networks
 
