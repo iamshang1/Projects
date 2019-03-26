@@ -22,6 +22,7 @@
 
 ### Advanced ML Exercises
 - [Comparing Techniques to Improve Deep Learning Performance](https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Deep_Learning)
+- [Exercises in Deep Reinforcement Learning](https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Deep_Reinforcement)
 - [Finding Dory in Movie Stills](https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Finding_Dory)
 - [Human Activity Recognition](https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Human_Activity_Recognition)
 - [Image Classification on CIFAR-10](https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Image_Classification)
