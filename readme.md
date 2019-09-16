@@ -30,9 +30,12 @@
 - [Automated Neuron Detection in Calcium Imaging Data](https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Neuron_Detection)
 - [Deep Learning for Text Classification](https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Text_Classification)
 - [Using Variational Autoencoders to Visualize Latent Space](https://github.com/iamshang1/Projects/tree/master/Advanced_ML/Variational_Autoencoder)
-- [Hierarchical Convolutional Attention Networks for Text Classification](https://github.com/iamshang1/Projects/tree/master/Advanced_ML/HCAN)
 
 ### Distributed ML Exercises
 - [Multi-GPU Image Classification in TensorFlow](https://github.com/iamshang1/Projects/tree/master/Distributed_ML/Image_Recognition)
 - [Malware Classification on Apache Spark](https://github.com/iamshang1/Projects/tree/master/Distributed_ML/Malware_Classification)
 - [Document Classification on Apache Spark](https://github.com/iamshang1/Projects/tree/master/Distributed_ML/Text_Classification)
+
+### Papers
+- [Hierarchical Convolutional Attention Networks for Text Classification](https://github.com/iamshang1/Projects/tree/master/Papers/HCAN)
+- [Classifying Cancer Pathology Reports with Hierarchical Self-Attention Networks](https://github.com/iamshang1/Projects/tree/master/Papers/HiSAN)
