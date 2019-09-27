@@ -33,7 +33,7 @@ class hcan(object):
             activation function to use for convolutional feature extraction
            
         methods:
-          - train(,data,labels,validation_data,epochs=30,savebest=False,filepath=None)
+          - train(data,labels,validation_data,epochs=30,savebest=False,filepath=None)
             train network on given data
           - predict(data)
             return the one-hot-encoded predicted labels for given data
