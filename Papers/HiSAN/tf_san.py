@@ -78,7 +78,7 @@ class san(object):
 
     def _attention_step(self,doc):
 
-        num_words = tf.reduce_sum(tf.sign(doc))
+        num_words = tf.math.count_nonzero(doc)
         doc_input_reduced = tf.expand_dims(doc[:num_words],0)
 
         #word embeddings

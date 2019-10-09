@@ -289,6 +289,7 @@ if __name__ == "__main__":
     
     #create data
     vocab = np.random.rand(vocab_size,embedding_size)
+    vocab[0,:] = 0
     X = np.random.randint(1,vocab_size,
         (train_samples+test_samples,max_words))
 

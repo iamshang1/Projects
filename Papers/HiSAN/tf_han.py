@@ -81,8 +81,8 @@ class han(object):
 
     def _han_step(self,doc):
 
-        words_per_line = tf.reduce_sum(tf.sign(doc),1)
-        num_lines = tf.reduce_sum(tf.sign(words_per_line))
+        words_per_line = tf.math.count_nonzero(doc,1)
+        num_lines = tf.math.count_nonzero(words_per_line)
         max_words_ = tf.reduce_max(words_per_line)
         doc_input_reduced = doc[:num_lines,:max_words_]
         num_words = words_per_line[:num_lines]
