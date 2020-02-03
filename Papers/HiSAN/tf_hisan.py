@@ -107,9 +107,9 @@ class hisan(object):
             padding='same',activation=self.activation,
             kernel_initializer=tf.contrib.layers.xavier_initializer())
 
-        Q = tf.where(tf.equal(mask,0),tf.zeros_like(Q),Q)
-        K = tf.where(tf.equal(mask,0),tf.zeros_like(K),K)
-        V = tf.where(tf.equal(mask,0),tf.zeros_like(V),V)
+        Q = tf.multiply(Q,mask)
+        K = tf.multiply(K,mask)
+        V = tf.multiply(V,mask)
 
         Q_ = tf.concat(tf.split(Q,self.attention_heads,axis=2),axis=0)
         K_ = tf.concat(tf.split(K,self.attention_heads,axis=2),axis=0)
@@ -119,10 +119,10 @@ class hisan(object):
         outputs = outputs/(K_.get_shape().as_list()[-1]**0.5)
         outputs = tf.where(tf.equal(outputs,0),tf.ones_like(outputs)*-1000,outputs)
         outputs = tf.nn.dropout(tf.nn.softmax(outputs),self.dropout)
-        word_self = tf.where(tf.equal(mask2,0),tf.zeros_like(outputs),outputs)
+        word_self = tf.multiply(outputs,mask2)
         outputs = tf.matmul(word_self,V_)
         outputs = tf.concat(tf.split(outputs,self.attention_heads,axis=0),axis=2)
-        outputs = tf.where(tf.equal(mask,0),tf.zeros_like(outputs),outputs)
+        outputs = tf.multiply(outputs,mask)
 
         #word target attention
         Q = tf.get_variable('word_Q',(1,1,self.attention_size),
