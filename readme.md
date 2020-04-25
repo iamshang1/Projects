@@ -37,5 +37,6 @@
 - [Document Classification on Apache Spark](https://github.com/iamshang1/Projects/tree/master/Distributed_ML/Text_Classification)
 
 ### Papers
-- [Hierarchical Convolutional Attention Networks for Text Classification](https://github.com/iamshang1/Projects/tree/master/Papers/HCAN)
-- [Classifying Cancer Pathology Reports with Hierarchical Self-Attention Networks](https://github.com/iamshang1/Projects/tree/master/Papers/HiSAN)
+- [Hierarchical Convolutional Attention Networks for Text Classification (2018)](https://github.com/iamshang1/Projects/tree/master/Papers/HCAN)
+- [Classifying Cancer Pathology Reports with Hierarchical Self-Attention Networks (2019)](https://github.com/iamshang1/Projects/tree/master/Papers/HiSAN)
+- [Using Case-Level Context to Classify Cancer Pathology Reports (2020)](https://github.com/iamshang1/Projects/tree/master/Papers/Case_Level_Context)
