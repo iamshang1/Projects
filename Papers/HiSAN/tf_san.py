@@ -6,45 +6,44 @@ from sklearn.metrics import f1_score
 import random
 
 class san(object):
-
+    '''
+    self-attention network (hisan without the hierarchy)
+    
+    parameters:
+      - embedding_matrix: numpy array
+        numpy array of word embeddings
+        each row should represent a word embedding
+        NOTE: the word index 0 is dropped, so the first row is ignored
+      - num_classes: int
+        number of output classes
+      - max_words: int
+        maximum number of words per document
+      - attention_heads: int (default: 8)
+        number of attention heads to use in multihead attention
+      - attention_size: int (default: 512)
+        dimension size of output embeddings from attention 
+      - dropout_keep: float (default: 0.9)
+        dropout keep rate for embeddings and attention softmax
+      - activation: tensorflow activation function (default: tf.nn.elu)
+        activation function to use for feature extraction
+      - lr: float (default: 0.0001)
+        learning rate for adam optimizer
+       
+    methods:
+      - train(data,labels,batch_size=64,epochs=30,patience=5,
+              validation_data,savebest=False,filepath=None)
+        train network on given data
+      - predict(data)
+        return the predicted labels for given data
+      - score(data,labels)
+        return the micro and macro f-scores of predicted labels on given data
+      - save(filepath)
+        save the model weights to a file
+      - load(filepath)
+        load model weights from a file
+    '''
     def __init__(self,embedding_matrix,num_classes,max_words,attention_heads=8,
                  attention_size=512,dropout_keep=0.9,activation=tf.nn.elu,lr=0.0001):
-        '''
-        self-attention network (hisan without the hierarchy)
-        
-        parameters:
-          - embedding_matrix: numpy array
-            numpy array of word embeddings
-            each row should represent a word embedding
-            NOTE: the word index 0 is dropped, so the first row is ignored
-          - num_classes: int
-            number of output classes
-          - max_words: int
-            maximum number of words per document
-          - attention_heads: int (default: 8)
-            number of attention heads to use in multihead attention
-          - attention_size: int (default: 512)
-            dimension size of output embeddings from attention 
-          - dropout_keep: float (default: 0.9)
-            dropout keep rate for embeddings and attention softmax
-          - activation: tensorflow activation function (default: tf.nn.elu)
-            activation function to use for feature extraction
-          - lr: float (default: 0.0001)
-            learning rate for adam optimizer
-           
-        methods:
-          - train(data,labels,batch_size=64,epochs=30,patience=5,
-                  validation_data,savebest=False,filepath=None)
-            train network on given data
-          - predict(data)
-            return the predicted labels for given data
-          - score(data,labels)
-            return the micro and macro f-scores of predicted labels on given data
-          - save(filepath)
-            save the model weights to a file
-          - load(filepath)
-            load model weights from a file
-        '''
         
         self.dropout_keep = dropout_keep
         self.dropout = tf.placeholder(tf.float32)

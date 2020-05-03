@@ -10,8 +10,40 @@ from sklearn.metrics import f1_score
 import random
 
 class rnn(object):
-
-    def __init__(self,num_classes,max_docs,input_size=512,rnn_units=300,dropout_keep=0.9,
+    '''
+    rnn modular add-on for capturing case-level-context
+    
+    parameters:
+      - num_classes: int
+        number of output classes
+      - max_docs: int
+        maximum number of documents in any sequence
+      - input_size: int
+        embedding dimension size of document embeddings
+      - rnn_units: int (default: 300)
+        number of rnn units in RNN layer
+      - dropout_keep: float (default: 0.9)
+        dropout keep rate after rnn layer
+      - lr: float (default: 0.0001)
+        learning rate for adam optimizer
+      - bidirectional: Boolean (default: True)
+        set to True to use case-level context from past and future documents
+        set to False to only use case-level context from past documents
+       
+    methods:
+      - train(data,labels,batch_size=100,epochs=50,patience=5,
+              validation_data=None,savebest=False,filepath=None)
+        train network on given data
+      - predict(data,batch_size=100)
+        return the predicted labels for given data
+      - score(data,labels,batch_size=100)
+        return the micro and macro f-scores of predicted labels on given data
+      - save(filepath)
+        save the model weights to a file
+      - load(filepath)
+        load model weights from a file
+    '''
+    def __init__(self,num_classes,max_docs,input_size,rnn_units=300,dropout_keep=0.9,
                  lr=0.0001,bidirectional=True):
         
         self.max_docs = max_docs
@@ -60,7 +92,9 @@ class rnn(object):
         self.sess.run(tf.global_variables_initializer())
 
     def _batch_prepro(self,data,labels=None):
-        
+        '''
+        used to pad 0-pad sequences and get indices of nonzero elements
+        '''
         batch_size = len(data)
         dims = len(data[0][0])
         retval = np.zeros((batch_size,self.max_docs,dims))
@@ -82,7 +116,35 @@ class rnn(object):
         return retval,num_docs,doc_idx
     
     def train(self,data,labels,batch_size=100,epochs=50,patience=5,validation_data=None,
-              savebest=False,filepath=None,val_micro=False):
+              savebest=False,filepath=None):
+        '''
+        train network on given data
+        
+        parameters:
+          - data: Iterable[Iterable[np.ndarray(dim=input_size)]]
+            The input data represents a list of cases, 
+            where each case consists of a list of documents, 
+            and each document is represented by a document embedding
+          - labels: Iterable[Iterable[int]]
+            The labels are represented by a list of cases,
+            where each case consists of a list of labels for each document in the case
+          - batch size: int (default: 100)
+            batch size to use for training
+          - epochs: int (default: 50)
+            number of epochs to train for
+          - patience: int (default: 5)
+            training stops after no improvement in validation score
+            for this number of epochs
+          - validation_data: tuple (optional)
+            tuple of inputs (X,y) representing validation data
+          - savebest: boolean (default: False)
+            set to True to save the best model based on validation score per epoch
+          - filepath: string (optional)
+            path to save model if savebest is set to True
+        
+        outputs:
+            None
+        '''
         
         if savebest==True and filepath==None:
             raise Exception("Please enter a path to save the network")
@@ -96,7 +158,6 @@ class rnn(object):
               % (len(data), validation_size))
 
         #track best model for saving
-        bestloss = np.inf
         prevbest = 0
         pat_count = 0
 
@@ -148,13 +209,8 @@ class rnn(object):
             start_time = time.time()
 
             #save if performance better than previous best
-            if val_micro and micro >= prevbest:
+            if micro >= prevbest:
                 prevbest = micro
-                pat_count = 0
-                if savebest:
-                    self.save(filepath)
-            elif not val_micro and loss < bestloss:
-                bestloss = loss
                 pat_count = 0
                 if savebest:
                     self.save(filepath)
@@ -164,7 +220,20 @@ class rnn(object):
                     break
 
     def predict(self,data,batch_size=100):
-    
+        '''
+        return the predicted labels for given data
+        
+        parameters:
+          - data: Iterable[Iterable[np.ndarray(dim=input_size)]]
+            The input data represents a list of cases, 
+            where each case consists of a list of documents, 
+            and each document is represented by a document embedding
+          - batch size: int (default: 100)
+            batch size to use during inference
+        
+        outputs:
+            flattened list of predicted labels for input data
+        '''
         y_preds = []
         for start in range(0,len(data),batch_size):
 
@@ -187,7 +256,24 @@ class rnn(object):
         return y_preds
 
     def score(self,data,labels,batch_size=100):
+        '''
+        return the micro and macro f-score of predicted labels on given data
+
+        parameters:
+          - data: Iterable[Iterable[np.ndarray(dim=input_size)]]
+            The input data represents a list of cases, 
+            where each case consists of a list of documents, 
+            and each document is represented by a document embedding
+          - labels: Iterable[Iterable[int]]
+            The labels are represented by a list of cases,
+            where each case consists of a list of labels for each document in the case
+          - batch size: int (default: 64)
+            batch size to use during inference
         
+        outputs:
+            tuple of floats (micro,macro,loss) representing micro f-score, macro f-score,
+            and average loss of predicted labels on given data
+        ''' 
         y_preds = []
         y_trues = []
         losses = []
@@ -218,9 +304,29 @@ class rnn(object):
         return micro,macro,loss
 
     def save(self,filename):
+        '''
+        save the model weights to a file
+        
+        parameters:
+          - filepath: string
+            path to save model weights
+        
+        outputs:
+            None
+        '''
         self.saver.save(self.sess,filename)
 
     def load(self,filename):
+        '''
+        load model weights from a file
+        
+        parameters:
+          - filepath: string
+            path from which to load model weights
+        
+        outputs:
+            None
+        '''
         self.saver.restore(self.sess,filename)
 
 if __name__ == "__main__":
@@ -251,5 +357,5 @@ if __name__ == "__main__":
     y_val = y[-val_size:]
     
     #test model
-    model = rnncrf(num_classes,max_seq_len,doc_embed_dim)
+    model = rnn(num_classes,max_seq_len,doc_embed_dim)
     model.train(X_train,y_train,batch_size,epochs,validation_data=(X_val,y_val))

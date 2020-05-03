@@ -7,45 +7,44 @@ from sklearn.metrics import f1_score
 import random
 
 class han(object):
-
+    '''
+    hierarchical attention network by yang et. al.
+    
+    parameters:
+      - embedding_matrix: numpy array
+        numpy array of word embeddings
+        each row should represent a word embedding
+        NOTE: the word index 0 is dropped, so the first row is ignored
+      - num_classes: int
+        number of output classes
+      - max_sents: int
+        maximum number of sentences/lines per document
+      - max_words: int
+        maximum number of words per sentence/line
+      - rnn_type: string (default: "gru")
+        rnn cells to use, can be "gru" or "lstm"
+      - rnn_units: int (default: 50)
+        number of rnn units to use for embedding layers
+      - attention_size: int (default: 200)
+        number of dimensions to use for attention hidden layer
+      - lr: float (default: 0.0001)
+        learning rate for adam optimizer
+       
+    methods:
+      - train(data,labels,batch_size=64,epochs=30,patience=5,
+              validation_data,savebest=False,filepath=None)
+        train network on given data
+      - predict(data)
+        return the predicted labels for given data
+      - score(data,labels)
+        return the micro and macro f-scores of predicted labels on given data
+      - save(filepath)
+        save the model weights to a file
+      - load(filepath)
+        load model weights from a file
+    '''
     def __init__(self,embedding_matrix,num_classes,max_sents,max_words,rnn_type="gru",
                  rnn_units=200,attention_size=300,lr=0.0001):
-        '''
-        hierarchical attention network by yang et. al.
-        
-        parameters:
-          - embedding_matrix: numpy array
-            numpy array of word embeddings
-            each row should represent a word embedding
-            NOTE: the word index 0 is dropped, so the first row is ignored
-          - num_classes: int
-            number of output classes
-          - max_sents: int
-            maximum number of sentences/lines per document
-          - max_words: int
-            maximum number of words per sentence/line
-          - rnn_type: string (default: "gru")
-            rnn cells to use, can be "gru" or "lstm"
-          - rnn_units: int (default: 50)
-            number of rnn units to use for embedding layers
-          - attention_size: int (default: 200)
-            number of dimensions to use for attention hidden layer
-          - lr: float (default: 0.0001)
-            learning rate for adam optimizer
-           
-        methods:
-          - train(data,labels,batch_size=64,epochs=30,patience=5,
-                  validation_data,savebest=False,filepath=None)
-            train network on given data
-          - predict(data)
-            return the predicted labels for given data
-          - score(data,labels)
-            return the micro and macro f-scores of predicted labels on given data
-          - save(filepath)
-            save the model weights to a file
-          - load(filepath)
-            load model weights from a file
-        '''
         
         self.rnn_units = rnn_units
         if rnn_type == "gru":
