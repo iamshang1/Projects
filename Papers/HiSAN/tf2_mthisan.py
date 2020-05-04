@@ -303,13 +303,13 @@ class mthisan(object):
         
         return scores,np.mean(losses)
         
-    def save(self,savedir):
+    def save(self,savepath):
 
-        self.model.save(savedir)
+        self.model.save_weights(savepath)
 
-    def load(self,savedir):
+    def load(self,savepath):
 
-        self.model = tf.keras.models.load_model(savedir)
+        self.model.load_weights(savepath)
 
 
 if __name__ == "__main__":
@@ -345,11 +345,12 @@ if __name__ == "__main__":
         y_tests.append(np.random.randint(0,i,test_samples))
 
     #make save dir
-    if not os.path.exists('mymodel'):
-        os.makedirs('mymodel')   
+    if not os.path.exists('savedmodels'):
+        os.makedirs('savedmodels')  
 
     #train model
     model = mthisan(vocab,num_classes,int(np.ceil(max_words/15)+1),15,
                     attention_heads,attention_size)
     model.train(X_train,y_trains,batch_size,epochs,validation_data=(X_test,y_tests),
-                savebest=True,filepath='mymodel')
+                savebest=True,filepath='savedmodels/model.ckpt')
+    model.load('savedmodels/model.ckpt')

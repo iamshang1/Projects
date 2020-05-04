@@ -254,13 +254,13 @@ class hisan(object):
         macro = f1_score(labels,y_pred,average='macro')
         return micro,macro
         
-    def save(self,savedir):
+    def save(self,savepath):
 
-        self.model.save(savedir)
+        self.model.save_weights(savepath)
 
-    def load(self,savedir):
+    def load(self,savepath):
 
-        self.model = tf.keras.models.load_model(savedir)
+        self.model.load_weights(savepath)
 
 
 if __name__ == "__main__":
@@ -292,11 +292,12 @@ if __name__ == "__main__":
     y_test = np.random.randint(0,num_classes,test_samples)
 
     #make save dir
-    if not os.path.exists('mymodel'):
-        os.makedirs('mymodel')   
+    if not os.path.exists('savedmodels'):
+        os.makedirs('savedmodels')   
 
     #train model
     model = hisan(vocab,num_classes,int(np.ceil(max_words/15)+1),15,
                   attention_heads,attention_size)
     model.train(X_train,y_train,batch_size,epochs,validation_data=(X_test,y_test),
-                savebest=True,filepath='mymodel')
+                savebest=True,filepath='savedmodels/model.ckpt')
+    model.load('savedmodels/model.ckpt')
