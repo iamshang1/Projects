@@ -5,10 +5,26 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras import Model
 import tensorflow.keras.layers as layers
+from dense_attention import scaled_attention
 import sys
 import time
 from sklearn.metrics import f1_score
 import random
+tf.enable_eager_execution()
+
+class scaled_attention(layers.Attention):
+    
+    def build(self, input_shape):
+        if self.use_scale:
+            self.scale = self.add_weight(
+                         name='scale',
+                         shape=(),
+                         initializer=tf.constant_initializer(self.scale),
+                         dtype=self.dtype,
+                         trainable=True)
+        else:
+            self.scale = None
+        super(Attention, self).build(input_shape)
 
 class mthisan(object):
 
@@ -30,8 +46,8 @@ class mthisan(object):
             self.word_V = layers.Dense(self.attention_size)
             self.word_target = tf.Variable(tf.random.uniform(shape=[1,self.attention_heads,1,
                                int(self.attention_size/self.attention_heads)]))
-            self.word_self_att = layers.Attention(use_scale=True)
-            self.word_targ_att = layers.Attention(use_scale=True)
+            self.word_self_att = scaled_attention(use_scale=1/np.sqrt(attention_size/attention_heads),dropout=0.1)
+            self.word_targ_att = scaled_attention(use_scale=1/np.sqrt(attention_size/attention_heads),dropout=0.1)
             
             self.line_drop = layers.Dropout(0.1)
             self.line_Q = layers.Dense(self.attention_size)
@@ -39,8 +55,8 @@ class mthisan(object):
             self.line_V = layers.Dense(self.attention_size)
             self.line_target = tf.Variable(tf.random.uniform(shape=[1,self.attention_heads,1,
                                int(self.attention_size/self.attention_heads)]))
-            self.line_self_att = layers.Attention(use_scale=True)
-            self.line_targ_att = layers.Attention(use_scale=True)
+            self.line_self_att = scaled_attention(use_scale=1/np.sqrt(attention_size/attention_heads),dropout=0.1)
+            self.line_targ_att = scaled_attention(use_scale=1/np.sqrt(attention_size/attention_heads),dropout=0.1)
 
             self.doc_drop = layers.Dropout(0.1)
             
