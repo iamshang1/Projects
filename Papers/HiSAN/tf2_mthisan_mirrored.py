@@ -35,6 +35,7 @@ class mthisan(object):
             super(mthisan.mthisan_model,self).__init__()
             self.attention_size = attention_size
             self.attention_heads = attention_heads
+            self.training = True
             
             self.embedding = layers.Embedding(embedding_matrix.shape[0],
                              embedding_matrix.shape[1],
@@ -46,8 +47,8 @@ class mthisan(object):
             self.word_V = layers.Dense(self.attention_size)
             self.word_target = tf.Variable(tf.random.uniform(shape=[1,self.attention_heads,1,
                                int(self.attention_size/self.attention_heads)]))
-            self.word_self_att = scaled_attention(use_scale=1/np.sqrt(attention_size/attention_heads),dropout=0.1)
-            self.word_targ_att = scaled_attention(use_scale=1/np.sqrt(attention_size/attention_heads),dropout=0.1)
+            self.word_self_att = scaled_attention(use_scale=1/np.sqrt(attention_size),dropout=0.1)
+            self.word_targ_att = scaled_attention(use_scale=1/np.sqrt(attention_size),dropout=0.1)
             
             self.line_drop = layers.Dropout(0.1)
             self.line_Q = layers.Dense(self.attention_size)
@@ -55,8 +56,8 @@ class mthisan(object):
             self.line_V = layers.Dense(self.attention_size)
             self.line_target = tf.Variable(tf.random.uniform(shape=[1,self.attention_heads,1,
                                int(self.attention_size/self.attention_heads)]))
-            self.line_self_att = scaled_attention(use_scale=1/np.sqrt(attention_size/attention_heads),dropout=0.1)
-            self.line_targ_att = scaled_attention(use_scale=1/np.sqrt(attention_size/attention_heads),dropout=0.1)
+            self.line_self_att = scaled_attention(use_scale=1/np.sqrt(attention_size),dropout=0.1)
+            self.line_targ_att = scaled_attention(use_scale=1/np.sqrt(attention_size),dropout=0.1)
 
             self.doc_drop = layers.Dropout(0.1)
             
@@ -97,11 +98,13 @@ class mthisan(object):
             word_q = self._split_heads(self.word_Q(word_embeds),num_lines)   #num_lines x heads x max_words x depth
             word_k = self._split_heads(self.word_K(word_embeds),num_lines)   #num_lines x heads x max_words x depth
             word_v = self._split_heads(self.word_V(word_embeds),num_lines)   #num_lines x heads x max_words x depth
-            word_self_out = self.word_self_att([word_q,word_v,word_k],[mask,mask])
+            word_self_out = self.word_self_att([word_q,word_v,word_k],[mask,mask],
+                            training=self.training)
             
             #word target attention
             word_target = tf.tile(self.word_target,[num_lines,1,1,1])       #num_lines x heads x 1 x depth
-            word_targ_out = self.word_targ_att([word_target,word_self_out,word_self_out],[None,mask])
+            word_targ_out = self.word_targ_att([word_target,word_self_out,word_self_out],[None,mask],
+                            training=self.training)
             word_targ_out = tf.transpose(word_targ_out,perm=[0, 2, 1, 3])   #num_lines x 1 x heads x depth
             line_embeds = tf.reshape(word_targ_out,(num_lines,1,self.attention_size))
             line_embeds = tf.expand_dims(tf.squeeze(line_embeds,[1]),0)     #1 x num_lines x attention_size
@@ -111,10 +114,12 @@ class mthisan(object):
             line_q = self._split_heads(self.line_Q(line_embeds),1)   #1 x heads x num_lines x depth
             line_k = self._split_heads(self.line_K(line_embeds),1)   #1 x heads x num_lines x depth
             line_v = self._split_heads(self.line_V(line_embeds),1)   #1 x heads x num_lines x depth
-            line_self_out = self.line_self_att([line_q,line_v,line_k])
+            line_self_out = self.line_self_att([line_q,line_v,line_k],
+                            training=self.training)
             
             #word target attention
-            line_targ_out = self.line_targ_att([self.line_target,line_self_out,line_self_out])
+            line_targ_out = self.line_targ_att([self.line_target,line_self_out,line_self_out],
+                            training=self.training)
             line_targ_out = tf.transpose(line_targ_out,perm=[0, 2, 1, 3])   #1 x 1 x heads x depth
             doc_embed = tf.reshape(line_targ_out,(1,self.attention_size))
             doc_embed = self.doc_drop(doc_embed)
@@ -208,6 +213,8 @@ class mthisan(object):
     def train(self,data,labels,batch_size=128,epochs=100,patience=5,
               validation_data=None,savebest=False,filepath=None):
         
+        self.model.training = True
+        
         if savebest==True and filepath==None:
             raise Exception("Please enter a path to save the network")
 
@@ -281,6 +288,8 @@ class mthisan(object):
             start_time = time.time()
 
     def predict(self,data,batch_size=128):
+    
+        self.model.training = False
     
         dataset = tf.data.Dataset.from_tensor_slices((data)).batch(batch_size) 
         dist_dataset = self.strategy.experimental_distribute_dataset(dataset)    
