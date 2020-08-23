@@ -301,7 +301,7 @@ class mthisan(object):
             X = self._distributed_reshape_input(X)
             predictions = self._distributed_predict_step(X)
             predictions = [tf.concat(task.values,0) for task in predictions]
-            for t,p in enumerate(self.predictions):
+            for t,p in enumerate(predictions):
                 y_preds[t].extend(np.argmax(p,1))
             
             sys.stdout.write("processed %i of %i records        \r" \

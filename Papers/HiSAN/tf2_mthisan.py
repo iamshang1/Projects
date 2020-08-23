@@ -235,13 +235,15 @@ class mthisan(object):
             for i in range(self.num_tasks):
                 micro = f1_score(y_trues[i],y_preds[i],average='micro')
                 macro = f1_score(y_trues[i],y_preds[i],average='macro')
-                print("epoch %i task %i training micro/macro: %.4f, %.4f" % (ep+1,i,micro,macro))
+                print("epoch %i task %i training micro/macro: %.4f, %.4f"\
+                      % (ep+1,i,micro,macro))
 
             scores,loss = self.score(validation_data[0],validation_data[1],
                                      batch_size=batch_size)
 
             for i in range(self.num_tasks):
-                print("epoch %i validation micro/macro: %.4f, %.4f" % (ep+1,scores[i][0],scores[i][1]))
+                print("epoch %i task %i validation micro/macro: %.4f, %.4f"\
+                      % (ep+1,i,scores[i][0],scores[i][1]))
 
             #save if performance better than previous best
             if loss < bestloss:
@@ -273,7 +275,7 @@ class mthisan(object):
 
             retval = self._list_to_numpy(data[start:stop]).astype(np.int32)
             predictions = self._predict_step(retval)
-            for i,p in enumerate(self.predictions):
+            for i,p in enumerate(predictions):
                 y_preds[i].extend(np.argmax(p,1))
 
             sys.stdout.write("processed %i of %i records        \r" \
@@ -284,6 +286,8 @@ class mthisan(object):
         return y_preds
 
     def score(self,data,labels,batch_size=128):  
+    
+        self.model.training = False
         
         y_preds = [[] for c in self.num_classes]
         losses = []
@@ -312,6 +316,7 @@ class mthisan(object):
             macro = f1_score(labels[i],y_preds[i],average='macro')
             scores.append([micro,macro])
         
+        print()
         return scores,np.mean(losses)
         
     def save(self,savepath):
