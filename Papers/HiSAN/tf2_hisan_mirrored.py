@@ -165,9 +165,7 @@ class hisan(object):
 
     def train(self,data,labels,batch_size=128,epochs=100,patience=5,
               validation_data=None,savebest=False,filepath=None):
-        
-        self.model.training = True
-        
+                
         if savebest==True and filepath==None:
             raise Exception("Please enter a path to save the network")
 
@@ -184,6 +182,8 @@ class hisan(object):
         pat_count = 0
 
         for ep in range(epochs):
+        
+            self.model.training = True
 
             train_dataset = tf.data.Dataset.from_tensor_slices(
                             (data,labels)).shuffle(len(data)).batch(batch_size) 
