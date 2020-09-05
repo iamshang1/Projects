@@ -140,7 +140,7 @@ class mthisan(object):
             self.model = self.mthisan_model(embedding_matrix,num_classes,attention_size,attention_heads)
             self.loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True,
                                reduction=tf.keras.losses.Reduction.NONE)
-            self.optimizer = tf.keras.optimizers.Adam(0.0001,0.9,0.99,1e-07,True)
+            self.optimizer = tf.keras.optimizers.Adam(0.0001,0.9,0.99,1e-08,False)
         
         print ('Number of devices: {}'.format(self.strategy.num_replicas_in_sync))
 

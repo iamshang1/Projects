@@ -116,7 +116,7 @@ class hisan(object):
         self.vocab_size = embedding_matrix.shape[0]
         self.model = self.hisan_model(embedding_matrix,num_classes,attention_size,attention_heads)
         self.loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        self.optimizer = tf.keras.optimizers.Adam(0.0001,0.9,0.99,1e-07,True)
+        self.optimizer = tf.keras.optimizers.Adam(0.0001,0.9,0.99,1e-08,False)
 
     def _list_to_numpy(self,inputval,noise=False):
     
