@@ -6,41 +6,40 @@ from sklearn.metrics import f1_score
 import random
 
 class cnn(object):
-
+    '''
+    text cnn based off yoon kim cnn
+    
+    parameters:
+      - embedding_matrix: numpy array
+        numpy array of word embeddings
+        each row should represent a word embedding
+        NOTE: the word index 0 is dropped, so the first row is ignored
+      - num_classes: int
+        number of output classes
+      - max_words: int
+        maximum number of words per document
+      - num_filters: int (default: 300)
+        number of filters for each of the three convolutional layers
+      - dropout_keep: float (default: 0.9)
+        dropout keep rate after maxpool
+      - lr: float (default: 0.0001)
+        learning rate for adam optimizer
+       
+    methods:
+      - train(data,labels,batch_size=64,epochs=30,patience=5,
+              validation_data,savebest=False,filepath=None)
+        train network on given data
+      - predict(data)
+        return the predicted labels for given data
+      - score(data,labels)
+        return the micro and macro f-scores of predicted labels on given data
+      - save(filepath)
+        save the model weights to a file
+      - load(filepath)
+        load model weights from a file
+    '''
     def __init__(self,embedding_matrix,num_classes,max_words,
                  num_filters=300,dropout_keep=0.5,lr=0.0001):
-        '''
-        text cnn based off yoon kim cnn
-        
-        parameters:
-          - embedding_matrix: numpy array
-            numpy array of word embeddings
-            each row should represent a word embedding
-            NOTE: the word index 0 is dropped, so the first row is ignored
-          - num_classes: int
-            number of output classes
-          - max_words: int
-            maximum number of words per document
-          - num_filters: int (default: 300)
-            number of filters for each of the three convolutional layers
-          - dropout_keep: float (default: 0.9)
-            dropout keep rate after maxpool
-          - lr: float (default: 0.0001)
-            learning rate for adam optimizer
-           
-        methods:
-          - train(data,labels,batch_size=64,epochs=30,patience=5,
-                  validation_data,savebest=False,filepath=None)
-            train network on given data
-          - predict(data)
-            return the predicted labels for given data
-          - score(data,labels)
-            return the micro and macro f-scores of predicted labels on given data
-          - save(filepath)
-            save the model weights to a file
-          - load(filepath)
-            load model weights from a file
-        '''
         
         self.dropout_keep = dropout_keep
         self.dropout = tf.placeholder(tf.float32)

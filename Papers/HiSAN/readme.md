@@ -1,6 +1,6 @@
 ## Classifying Cancer Pathology Reports with Hierarchical Self-Attention Networks
 
-This repo is contains the models used in the paper *Classifying Cancer Pathology Reports with Hierarchical Self-Attention Networks*.
+This repo contains the models used in the paper *Classifying Cancer Pathology Reports with Hierarchical Self-Attention Networks*.
 
 ### Requirements
 
