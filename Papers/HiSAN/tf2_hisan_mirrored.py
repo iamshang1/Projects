@@ -73,7 +73,7 @@ class hisan(object):
                         
             #word embeddings
             word_embeds = self.embedding(doc_input_reduced)  #num_lines x max_words x embed_dim
-            word_embeds = self.word_drop(word_embeds)
+            word_embeds = self.word_drop(word_embeds,training=self.training)
             
             #word self attention
             word_q = self._split_heads(self.word_Q(word_embeds),num_lines)   #num_lines x heads x max_words x depth
@@ -89,7 +89,7 @@ class hisan(object):
             word_targ_out = tf.transpose(word_targ_out,perm=[0, 2, 1, 3])   #num_lines x 1 x heads x depth
             line_embeds = tf.reshape(word_targ_out,(num_lines,1,self.attention_size))
             line_embeds = tf.expand_dims(tf.squeeze(line_embeds,[1]),0)     #1 x num_lines x attention_size
-            line_embeds = self.line_drop(line_embeds)
+            line_embeds = self.line_drop(line_embeds,training=self.training)
             
             #line self attention
             line_q = self._split_heads(self.line_Q(line_embeds),1)   #1 x heads x num_lines x depth
@@ -103,7 +103,7 @@ class hisan(object):
                             training=self.training)
             line_targ_out = tf.transpose(line_targ_out,perm=[0, 2, 1, 3])   #1 x 1 x heads x depth
             doc_embed = tf.reshape(line_targ_out,(1,self.attention_size))
-            doc_embed = self.doc_drop(doc_embed)
+            doc_embed = self.doc_drop(doc_embed,training=self.training)
             
             return tf.squeeze(doc_embed,[0])
             
