@@ -71,6 +71,7 @@ class hisan(object):
             #word embeddings
             doc_input_reduced = tf.reshape(doc_input_reduced,(-1,max_words))[skip_lines]
             word_embeds = self.embedding(doc_input_reduced)  #batch*max_lines x max_words x embed_dim
+            word_embeds = self.embedding(doc_input_reduced)  #num_lines x max_words x embed_dim
             word_embeds = self.word_drop(word_embeds,training=self.training)
             
             #word self attention
@@ -89,6 +90,9 @@ class hisan(object):
                                         tf.reshape(word_targ_out,(count_lines,self.attention_size)),
                                         (batch_size*max_lines,self.attention_size))
             line_embeds = tf.reshape(line_embeds,(batch_size,max_lines,self.attention_size))
+            word_targ_out = tf.transpose(word_targ_out,perm=[0, 2, 1, 3])   #num_lines x 1 x heads x depth
+            line_embeds = tf.reshape(word_targ_out,(num_lines,1,self.attention_size))
+            line_embeds = tf.expand_dims(tf.squeeze(line_embeds,[1]),0)     #1 x num_lines x attention_size
             line_embeds = self.line_drop(line_embeds,training=self.training)
             
             #line self attention
@@ -105,6 +109,9 @@ class hisan(object):
             line_targ_out = tf.transpose(line_targ_out,perm=[0, 2, 1, 3])    #batch x 1 x heads x depth
             doc_embeds = tf.reshape(line_targ_out,(batch_size,self.attention_size))
             doc_embeds = self.doc_drop(doc_embeds,training=self.training)
+            line_targ_out = tf.transpose(line_targ_out,perm=[0, 2, 1, 3])   #1 x 1 x heads x depth
+            doc_embed = tf.reshape(line_targ_out,(1,self.attention_size))
+            doc_embed = self.doc_drop(doc_embed,training=self.training)
             
             logits = self.classify(doc_embeds)
             return logits
