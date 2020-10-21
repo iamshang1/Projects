@@ -67,8 +67,62 @@ class mthisan(object):
                                  
         def call(self,docs):
             
-            #input shape: batch x lines x words        
-            doc_embeds = tf.map_fn(self._attention_step,docs,dtype=tf.float32)
+            #input shape: batch x lines x words
+            batch_size = tf.shape(docs)[0]
+            words_per_line = tf.math.count_nonzero(docs,2,dtype=tf.int32)
+            max_words = tf.reduce_max(words_per_line)
+            lines_per_doc = tf.math.count_nonzero(words_per_line,1,dtype=tf.int32)
+            max_lines = tf.reduce_max(lines_per_doc)
+            num_words = words_per_line[:,:max_lines]
+            num_words = tf.reshape(num_words,(-1,))
+            doc_input_reduced = docs[:,:max_lines,:max_words]
+            
+            #masks
+            skip_lines = tf.not_equal(num_words,0)
+            count_lines = tf.reduce_sum(tf.cast(skip_lines,tf.int32))
+            mask_words = tf.sequence_mask(num_words,max_words)[skip_lines]    #batch*max_lines x max_words
+            mask_words = tf.tile(tf.expand_dims(mask_words,1),[1,self.attention_heads,1])  #batch*max_lines x heads x max_words
+            mask_lines = tf.sequence_mask(lines_per_doc,max_lines)    #batch x max_lines
+            mask_lines = tf.tile(tf.expand_dims(mask_lines,1),[1,self.attention_heads,1])  #batch x heads x max_lines
+                        
+            #word embeddings
+            doc_input_reduced = tf.reshape(doc_input_reduced,(-1,max_words))[skip_lines]
+            word_embeds = self.embedding(doc_input_reduced)  #batch*max_lines x max_words x embed_dim
+            word_embeds = self.word_drop(word_embeds,training=self.training)
+            
+            #word self attention
+            word_q = self._split_heads(self.word_Q(word_embeds),count_lines)   #batch*max_lines x heads x max_words x depth
+            word_k = self._split_heads(self.word_K(word_embeds),count_lines)   #batch*max_lines x heads x max_words x depth
+            word_v = self._split_heads(self.word_V(word_embeds),count_lines)   #batch*max_lines x heads x max_words x depth
+            word_self_out = self.word_self_att([word_q,word_v,word_k],[mask_words,mask_words],
+                            training=self.training)
+            
+            #word target attention
+            word_target = tf.tile(self.word_target,[count_lines,1,1,1])       #batch*max_lines x heads x 1 x depth
+            word_targ_out = self.word_targ_att([word_target,word_self_out,word_self_out],[None,mask_words],
+                            training=self.training)
+            word_targ_out = tf.transpose(word_targ_out,perm=[0, 2, 1, 3])   #batch*max_lines x 1 x heads x depth
+            line_embeds = tf.scatter_nd(tf.where(skip_lines),
+                                        tf.reshape(word_targ_out,(count_lines,self.attention_size)),
+                                        (batch_size*max_lines,self.attention_size))
+            line_embeds = tf.reshape(line_embeds,(batch_size,max_lines,self.attention_size))
+            line_embeds = self.line_drop(line_embeds,training=self.training)
+            
+            #line self attention
+            line_q = self._split_heads(self.line_Q(line_embeds),batch_size)   #batch x heads x max_lines x depth
+            line_k = self._split_heads(self.line_K(line_embeds),batch_size)   #batch x heads x max_lines x depth
+            line_v = self._split_heads(self.line_V(line_embeds),batch_size)   #batch x heads x max_lines x depth
+            line_self_out = self.line_self_att([line_q,line_v,line_k],[mask_lines,mask_lines],
+                            training=self.training)
+            
+            #word target attention
+            line_target = tf.tile(self.line_target,[batch_size,1,1,1])       #batch x heads x 1 x depth
+            line_targ_out = self.line_targ_att([line_target,line_self_out,line_self_out],[None,mask_lines],
+                            training=self.training)
+            line_targ_out = tf.transpose(line_targ_out,perm=[0, 2, 1, 3])    #batch x 1 x heads x depth
+            doc_embeds = tf.reshape(line_targ_out,(batch_size,self.attention_size))
+            doc_embeds = self.doc_drop(doc_embeds,training=self.training)
+            
             logits = []
             for l in self.classify_layers:
                 logits.append(l(doc_embeds))
@@ -78,54 +132,7 @@ class mthisan(object):
             x = tf.reshape(x,(batch_size,-1,self.attention_heads,
                            int(self.attention_size/self.attention_heads)))
             return tf.transpose(x,perm=[0, 2, 1, 3])
-            
-        def _attention_step(self,doc):
-        
-            #input: lines x words
-            words_per_line = tf.math.count_nonzero(doc,1)
-            num_lines = tf.math.count_nonzero(words_per_line)
-            max_words = tf.reduce_max(words_per_line)
-            doc_input_reduced = doc[:num_lines,:max_words]
-            num_words = words_per_line[:num_lines]
-            mask = tf.sequence_mask(num_words,max_words)    #num_lines x max_words
-            mask = tf.tile(tf.expand_dims(mask,1),[1,self.attention_heads,1])  #num_lines x heads x max_words
-                        
-            #word embeddings
-            word_embeds = self.embedding(doc_input_reduced)  #num_lines x max_words x embed_dim
-            word_embeds = self.word_drop(word_embeds,training=self.training)
-            
-            #word self attention
-            word_q = self._split_heads(self.word_Q(word_embeds),num_lines)   #num_lines x heads x max_words x depth
-            word_k = self._split_heads(self.word_K(word_embeds),num_lines)   #num_lines x heads x max_words x depth
-            word_v = self._split_heads(self.word_V(word_embeds),num_lines)   #num_lines x heads x max_words x depth
-            word_self_out = self.word_self_att([word_q,word_v,word_k],[mask,mask],
-                            training=self.training)
-            
-            #word target attention
-            word_target = tf.tile(self.word_target,[num_lines,1,1,1])       #num_lines x heads x 1 x depth
-            word_targ_out = self.word_targ_att([word_target,word_self_out,word_self_out],[None,mask],
-                            training=self.training)
-            word_targ_out = tf.transpose(word_targ_out,perm=[0, 2, 1, 3])   #num_lines x 1 x heads x depth
-            line_embeds = tf.reshape(word_targ_out,(num_lines,1,self.attention_size))
-            line_embeds = tf.expand_dims(tf.squeeze(line_embeds,[1]),0)     #1 x num_lines x attention_size
-            line_embeds = self.line_drop(line_embeds,training=self.training)
-            
-            #line self attention
-            line_q = self._split_heads(self.line_Q(line_embeds),1)   #1 x heads x num_lines x depth
-            line_k = self._split_heads(self.line_K(line_embeds),1)   #1 x heads x num_lines x depth
-            line_v = self._split_heads(self.line_V(line_embeds),1)   #1 x heads x num_lines x depth
-            line_self_out = self.line_self_att([line_q,line_v,line_k],
-                            training=self.training)
-            
-            #word target attention
-            line_targ_out = self.line_targ_att([self.line_target,line_self_out,line_self_out],
-                            training=self.training)
-            line_targ_out = tf.transpose(line_targ_out,perm=[0, 2, 1, 3])   #1 x 1 x heads x depth
-            doc_embed = tf.reshape(line_targ_out,(1,self.attention_size))
-            doc_embed = self.doc_drop(doc_embed,training=self.training)
-            
-            return tf.squeeze(doc_embed,[0])
-            
+
     def __init__(self,embedding_matrix,num_classes,max_sents=201,max_words=15,
                  attention_heads=8,attention_size=400):
     
