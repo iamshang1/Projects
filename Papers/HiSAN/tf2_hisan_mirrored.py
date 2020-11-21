@@ -10,7 +10,7 @@ import sys
 import time
 from sklearn.metrics import f1_score
 import random
-tf.enable_eager_execution()
+#tf.enable_eager_execution()
 
 class hisan(object):
 
@@ -207,10 +207,10 @@ class hisan(object):
                 X,y = batch
                 X = self._distributed_reshape_input(X,noise=True)                
                 predictions,loss = self._distributed_train_step((X,y),batch_size)
-                predictions = tf.concat(predictions.values,0)
+                predictions = tf.concat(predictions,0)
                 
                 y_pred.extend(np.argmax(predictions,1))
-                y_true.extend(tf.concat(y.values,0))
+                y_true.extend(tf.concat(y,0))
                 sys.stdout.write("epoch %i, sample %i of %i, loss: %f        \r"\
                                  % (ep+1,(i+1)*batch_size,len(data),loss))
                 sys.stdout.flush()
@@ -253,7 +253,7 @@ class hisan(object):
             #predict step
             X = self._distributed_reshape_input(X)
             predictions = self._distributed_predict_step(X)
-            predictions = tf.concat(predictions.values,0)
+            predictions = tf.concat(predictions,0)
             y_pred.extend(np.argmax(predictions,1))
             sys.stdout.write("processed %i of %i records        \r" \
                              % ((i+1)*batch_size,len(data)))

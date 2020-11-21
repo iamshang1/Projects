@@ -10,7 +10,7 @@ import sys
 import time
 from sklearn.metrics import f1_score
 import random
-tf.enable_eager_execution()
+#tf.enable_eager_execution()
 
 class hisan(object):
 

@@ -10,21 +10,7 @@ import sys
 import time
 from sklearn.metrics import f1_score
 import random
-tf.enable_eager_execution()
-
-class scaled_attention(layers.Attention):
-    
-    def build(self, input_shape):
-        if self.use_scale:
-            self.scale = self.add_weight(
-                         name='scale',
-                         shape=(),
-                         initializer=tf.constant_initializer(self.scale),
-                         dtype=self.dtype,
-                         trainable=True)
-        else:
-            self.scale = None
-        super(Attention, self).build(input_shape)
+#tf.enable_eager_execution()
 
 class mthisan(object):
 
@@ -256,10 +242,10 @@ class mthisan(object):
                 y = self._distributed_transpose(y)
                 X = self._distributed_reshape_input(X,noise=True)
                 predictions,loss = self._distributed_train_step((X,y),batch_size)
-                predictions = [tf.concat(task.values,0) for task in predictions]
+                predictions = [tf.concat(task,0) for task in predictions]
 
                 #track correct predictions
-                for t,(p,l) in enumerate(zip(predictions,tf.concat(y.values,1))):
+                for t,(p,l) in enumerate(zip(predictions,tf.concat(y,1))):
                     y_preds[t].extend(np.argmax(p,1))
                     y_trues[t].extend(l)
                 sys.stdout.write("epoch %i, sample %i of %i, loss: %f        \r"\
@@ -307,7 +293,7 @@ class mthisan(object):
             #predict step
             X = self._distributed_reshape_input(X)
             predictions = self._distributed_predict_step(X)
-            predictions = [tf.concat(task.values,0) for task in predictions]
+            predictions = [tf.concat(task,0) for task in predictions]
             for t,p in enumerate(predictions):
                 y_preds[t].extend(np.argmax(p,1))
             
@@ -331,7 +317,7 @@ class mthisan(object):
             y = self._distributed_transpose(y)
             X = self._distributed_reshape_input(X)
             predictions,loss = self._distributed_score_step((X,y),batch_size)
-            predictions = [tf.concat(task.values,0) for task in predictions]
+            predictions = [tf.concat(task,0) for task in predictions]
 
             for t,p in enumerate(predictions):
                 y_preds[t].extend(np.argmax(p,1))
