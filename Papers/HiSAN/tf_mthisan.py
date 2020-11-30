@@ -219,6 +219,7 @@ class hisan(object):
 
             scores,loss = self.score(validation_data[0],validation_data[1],batch_size=batch_size)
             for t in range(self.num_tasks):
+                micro,macro = scores[t]
                 print("epoch %i task %i validation micro/macro: %.4f, %.4f" % (ep+1,t+1,micro,macro))
             print("epoch %i validation loss: %.8f" % (ep+1,loss))
 
