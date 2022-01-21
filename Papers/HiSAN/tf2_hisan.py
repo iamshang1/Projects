@@ -71,7 +71,6 @@ class hisan(object):
             #word embeddings
             doc_input_reduced = tf.reshape(doc_input_reduced,(-1,max_words))[skip_lines]
             word_embeds = self.embedding(doc_input_reduced)  #batch*max_lines x max_words x embed_dim
-            word_embeds = self.embedding(doc_input_reduced)  #num_lines x max_words x embed_dim
             word_embeds = self.word_drop(word_embeds,training=self.training)
             
             #word self attention
