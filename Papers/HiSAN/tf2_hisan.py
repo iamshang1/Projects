@@ -106,9 +106,6 @@ class hisan(object):
             line_targ_out = tf.transpose(line_targ_out,perm=[0, 2, 1, 3])    #batch x 1 x heads x depth
             doc_embeds = tf.reshape(line_targ_out,(batch_size,self.attention_size))
             doc_embeds = self.doc_drop(doc_embeds,training=self.training)
-            line_targ_out = tf.transpose(line_targ_out,perm=[0, 2, 1, 3])   #1 x 1 x heads x depth
-            doc_embed = tf.reshape(line_targ_out,(1,self.attention_size))
-            doc_embed = self.doc_drop(doc_embed,training=self.training)
             
             logits = self.classify(doc_embeds)
             return logits
