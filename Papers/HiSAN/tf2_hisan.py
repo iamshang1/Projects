@@ -90,11 +90,8 @@ class hisan(object):
                                         tf.reshape(word_targ_out,(count_lines,self.attention_size)),
                                         (batch_size*max_lines,self.attention_size))
             line_embeds = tf.reshape(line_embeds,(batch_size,max_lines,self.attention_size))
-            word_targ_out = tf.transpose(word_targ_out,perm=[0, 2, 1, 3])   #num_lines x 1 x heads x depth
-            line_embeds = tf.reshape(word_targ_out,(num_lines,1,self.attention_size))
-            line_embeds = tf.expand_dims(tf.squeeze(line_embeds,[1]),0)     #1 x num_lines x attention_size
             line_embeds = self.line_drop(line_embeds,training=self.training)
-            
+
             #line self attention
             line_q = self._split_heads(self.line_Q(line_embeds),batch_size)   #batch x heads x max_lines x depth
             line_k = self._split_heads(self.line_K(line_embeds),batch_size)   #batch x heads x max_lines x depth
